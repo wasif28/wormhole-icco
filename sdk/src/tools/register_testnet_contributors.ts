@@ -6,7 +6,7 @@ import { web3 } from "@project-serum/anchor";
 import { findProgramAddressSync } from "@project-serum/anchor/dist/cjs/utils/pubkey";
 
 const fs = require("fs");
-const DeploymentConfig = require("../../../ethereum/icco_deployment_config.json");
+import * as DeploymentConfig from "../../../ethereum/icco_deployment_config.js";
 const ConductorConfig = DeploymentConfig["conductor"];
 
 function parseArgs(): string[] {

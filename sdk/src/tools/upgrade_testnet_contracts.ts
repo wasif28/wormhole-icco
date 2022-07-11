@@ -1,9 +1,9 @@
 import yargs from "yargs";
 import { ethers } from "ethers";
-import { Conductor__factory, Contributor__factory } from "../";
+import { Conductor__factory, Contributor__factory } from "../ethers-contracts";
 
 const fs = require("fs");
-const DeploymentConfig = require("../../../ethereum/icco_deployment_config.js");
+import * as DeploymentConfig from "../../../ethereum/icco_deployment_config.js";
 
 function parseArgs(): string[] {
   const parsed = yargs(process.argv.slice(2))
@@ -12,15 +12,16 @@ function parseArgs(): string[] {
       description: "Type of contract (e.g. conductor)",
       require: true,
     })
-    .options("network", {
+    .option("network", {
       type: "string",
       description: "Network to deploy to (e.g. goerli)",
-      require: true,
+      required: true,
     })
     .help("h")
     .alias("h", "help").argv;
 
-  const args = [parsed.contractType, parsed.network];
+  // @ts-ignore
+  const args: string[] = [parsed.contractType, parsed.network];
   return args;
 }
 
@@ -36,7 +37,7 @@ async function main() {
     throw Error("deployment config undefined");
   }
 
-  const testnet = JSON.parse(fs.readFileSync(`${__dirname}/../../testnet.json`, "utf8"));
+  const testnet = JSON.parse(fs.readFileSync(`${__dirname}/../../../testnet.json`, "utf8"));
 
   // create wallet to call sdk method with
   const provider = new ethers.providers.JsonRpcProvider(config.rpc);
