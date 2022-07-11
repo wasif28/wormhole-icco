@@ -1,6 +1,6 @@
 # Details
 
-This directory contains scripts contract registration, and proxy pattern upgrades.
+This directory contains scripts for contract registration, and proxy pattern upgrades.
 
 ### Dependencies
 
