@@ -32,7 +32,7 @@ ts-node register_testnet_contributors.ts --network goerli fuji binance_testnet
 Before upgrading the contract, the implementation address must exist in `testnet.json`
 
 ```sh
-ts-node register_testnet_contributors.ts --contractType contributor --network goerli
+ts-node upgrade_testnet_contracts.ts --contractType contributor --network goerli
 ```
 
 ### Arguments
