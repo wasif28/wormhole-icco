@@ -75,8 +75,6 @@ import {
 } from "../icco";
 import { web3 } from "@project-serum/anchor";
 import { getAssociatedTokenAddress, getMint } from "@solana/spl-token";
-import { findProgramAddressSync } from "@project-serum/anchor/dist/cjs/utils/pubkey";
-import { SignedVAAWithQuorum } from "@certusone/wormhole-sdk/lib/cjs/proto/gossip/v1/gossip";
 import { getBlockTime, wait } from "../anchor/utils";
 
 export async function extractVaaPayload(signedVaa: Uint8Array): Promise<Uint8Array> {
@@ -877,11 +875,7 @@ export function findUniqueContributions(
   return uniqueContributions;
 }
 
-export async function attestMintFromSolana(
-  connection: web3.Connection,
-  sender: web3.Keypair,
-  mint: web3.PublicKey
-): Promise<web3.TransactionResponse> {
+export async function attestMintFromSolana(connection: web3.Connection, sender: web3.Keypair, mint: web3.PublicKey) {
   const transaction = await attestFromSolana(
     connection,
     SOLANA_CORE_BRIDGE_ADDRESS.toString(),
@@ -891,19 +885,13 @@ export async function attestMintFromSolana(
   );
 
   transaction.partialSign(sender);
-  const tx = await connection.sendRawTransaction(transaction.serialize());
-
-  // confirm
-  while (true) {
-    const result = await connection.confirmTransaction(tx);
-    if (result.value.err == null) {
-      break;
-    }
-    console.log("attempting confirmTransaction again");
-  }
-
-  // return response
-  return connection.getTransaction(tx);
+  return connection
+    .sendRawTransaction(transaction.serialize())
+    .then(async (tx) => {
+      await connection.confirmTransaction(tx);
+      return tx;
+    })
+    .then(async (tx): Promise<[string, web3.TransactionResponse]> => [tx, await connection.getTransaction(tx)]);
 }
 
 export async function transferFromSolanaToEvm(
@@ -913,7 +901,7 @@ export async function transferFromSolanaToEvm(
   amount: bigint,
   recipientChain: ChainId,
   recipientAddress: string
-): Promise<web3.TransactionResponse> {
+) {
   const tokenAccount = await getAssociatedTokenAddress(mint, sender.publicKey);
   const transaction = await transferFromSolana(
     connection,
@@ -928,19 +916,13 @@ export async function transferFromSolanaToEvm(
   );
 
   transaction.partialSign(sender);
-  const tx = await connection.sendRawTransaction(transaction.serialize());
-
-  // confirm
-  while (true) {
-    const result = await connection.confirmTransaction(tx);
-    if (result.value.err == null) {
-      break;
-    }
-    console.log("attempting confirmTransaction again");
-  }
-
-  // return response
-  return connection.getTransaction(tx);
+  return connection
+    .sendRawTransaction(transaction.serialize())
+    .then(async (tx) => {
+      await connection.confirmTransaction(tx);
+      return tx;
+    })
+    .then(async (tx): Promise<[string, web3.TransactionResponse]> => [tx, await connection.getTransaction(tx)]);
 }
 
 export async function getSignedVaaFromSolanaTokenBridge(sequence: string) {
@@ -995,7 +977,13 @@ export async function postAndRedeemTransferVaa(
     signedVaa
   );
   transaction.partialSign(payer);
-  return connection.sendRawTransaction(transaction.serialize());
+  return connection
+    .sendRawTransaction(transaction.serialize())
+    .then(async (tx) => {
+      await connection.confirmTransaction(tx);
+      return tx;
+    })
+    .then(async (tx): Promise<[string, web3.TransactionResponse]> => [tx, await connection.getTransaction(tx)]);
 }
 
 export async function waitUntilSolanaBlock(connection: web3.Connection, expiration: number) {
