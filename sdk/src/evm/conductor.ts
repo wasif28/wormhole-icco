@@ -12,7 +12,7 @@ import { web3 } from "@project-serum/anchor";
 import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
 import { ethers } from "ethers";
 import { hexToPublicKey } from "../anchor/utils";
-import { Conductor, Conductor__factory, ERC20__factory } from "../ethers-contracts";
+import { Conductor, Conductor__factory, IERC20__factory } from "../ethers-contracts";
 import { AcceptedToken, ConductorSale, Raise } from "../icco";
 import { bytesLikeToHex } from "../utils";
 
@@ -78,7 +78,7 @@ export class IccoConductor {
         raise.tokenChain,
         ethers.utils.arrayify(raise.token)
       );
-      const token = ERC20__factory.connect(wrapped, this.signer());
+      const token = IERC20__factory.connect(wrapped, this.signer());
       const receipt = await token.approve(this.address(), raise.tokenAmount).then((tx) => tx.wait());
     }
 
