@@ -1,10 +1,10 @@
 [features]
 seeds = false
 [programs.localnet]
-anchor_contributor = "iccofFrR4XWprDLTbLJsXqp7dL4rBBY6v3dZunLrXTB"
+anchor_contributor = "NEXaa1zDNLJ9AqwEd7LipQTge4ygeVVHyr8Tv7X2FCn"
 
 [programs.devnet]
-anchor_contributor = "iccofFrR4XWprDLTbLJsXqp7dL4rBBY6v3dZunLrXTB"
+anchor_contributor = "NEXaa1zDNLJ9AqwEd7LipQTge4ygeVVHyr8Tv7X2FCn"
 
 [registry]
 url = "https://anchor.projectserum.com"

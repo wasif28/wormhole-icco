@@ -15,7 +15,7 @@ use error::*;
 use token_bridge::*;
 use wormhole::*;
 
-declare_id!("iccofFrR4XWprDLTbLJsXqp7dL4rBBY6v3dZunLrXTB");
+declare_id!("NEXaa1zDNLJ9AqwEd7LipQTge4ygeVVHyr8Tv7X2FCn");
 
 #[program]
 pub mod anchor_contributor {
