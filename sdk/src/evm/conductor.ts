@@ -12,7 +12,11 @@ import { web3 } from "@project-serum/anchor";
 import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
 import { ethers } from "ethers";
 import { hexToPublicKey } from "../anchor/utils";
-import { Conductor, Conductor__factory, IERC20__factory } from "../ethers-contracts";
+import {
+  Conductor,
+  Conductor__factory,
+  IERC20__factory,
+} from "../ethers-contracts";
 import { AcceptedToken, ConductorSale, Raise } from "../icco";
 import { bytesLikeToHex } from "../utils";
 
@@ -22,7 +26,13 @@ export class IccoConductor {
   wormhole: string;
   tokenBridge: string;
 
-  constructor(address: string, chain: ChainId, signer: ethers.Wallet, wormhole: string, tokenBridge: string) {
+  constructor(
+    address: string,
+    chain: ChainId,
+    signer: ethers.Wallet,
+    wormhole: string,
+    tokenBridge: string
+  ) {
     this.contract = Conductor__factory.connect(address, signer);
     this.chain = chain;
     this.wormhole = wormhole;
@@ -79,7 +89,9 @@ export class IccoConductor {
         ethers.utils.arrayify(raise.token)
       );
       const token = IERC20__factory.connect(wrapped, this.signer());
-      const receipt = await token.approve(this.address(), raise.tokenAmount).then((tx) => tx.wait());
+      const receipt = await token
+        .approve(this.address(), raise.tokenAmount)
+        .then((tx) => tx.wait());
     }
 
     // now create

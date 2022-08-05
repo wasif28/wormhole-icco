@@ -15,7 +15,6 @@ export interface Raise {
   unlockTimestamp: ethers.BigNumberish;
   recipient: string;
   refundRecipient: string;
-  solanaTokenAccount: ethers.BytesLike;
   authority: string;
 }
 
@@ -120,7 +119,11 @@ export interface SaleSealed {
   allocations: Allocation[];
 }
 
-export function makeAcceptedToken(chainId: ChainId, address: string, conversion: ethers.BigNumberish): AcceptedToken {
+export function makeAcceptedToken(
+  chainId: ChainId,
+  address: string,
+  conversion: ethers.BigNumberish
+): AcceptedToken {
   return {
     tokenChain: chainId,
     tokenAddress: nativeToUint8Array(address, chainId),

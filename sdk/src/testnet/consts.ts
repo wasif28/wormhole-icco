@@ -1,6 +1,11 @@
 const fs = require("fs");
 import { web3 } from "@project-serum/anchor";
-import { ChainId, CHAIN_ID_ETH, CHAIN_ID_AVAX, CHAIN_ID_SOLANA } from "@certusone/wormhole-sdk";
+import {
+  ChainId,
+  CHAIN_ID_ETH,
+  CHAIN_ID_AVAX,
+  CHAIN_ID_SOLANA,
+} from "@certusone/wormhole-sdk";
 
 export const REPO_PATH = `${__dirname}/../../..`;
 export const SDK_PATH = `${REPO_PATH}/sdk`;
@@ -42,9 +47,15 @@ export const WORMHOLE_ADDRESSES = {
 const REPO_ROOT = `${__dirname}/../../..`;
 const TESTNET_CFG = `${REPO_ROOT}/sdk/cfg/testnet`;
 
-export const TESTNET_ADDRESSES = JSON.parse(fs.readFileSync(`${REPO_ROOT}/testnet.json`, "utf8"));
-export const SALE_CONFIG = JSON.parse(fs.readFileSync(`${TESTNET_CFG}/saleConfig.json`, "utf8"));
-export const CONTRIBUTOR_INFO = JSON.parse(fs.readFileSync(`${TESTNET_CFG}/contributors.json`, "utf8"));
+export const TESTNET_ADDRESSES = JSON.parse(
+  fs.readFileSync(`${REPO_ROOT}/testnet.json`, "utf8")
+);
+export const SALE_CONFIG = JSON.parse(
+  fs.readFileSync(`${TESTNET_CFG}/saleConfig.json`, "utf8")
+);
+export const CONTRIBUTOR_INFO = JSON.parse(
+  fs.readFileSync(`${TESTNET_CFG}/contributors.json`, "utf8")
+);
 //export const SOLANA_IDL = JSON.parse(fs.readFileSync(`${__dirname}/../solana/anchor_contributor.json`, "utf8"));
 
 // VAA fetching params
@@ -62,18 +73,28 @@ CHAIN_ID_TO_NETWORK.set(CHAIN_ID_AVAX, CONTRIBUTOR_NETWORKS[1]);
 
 // conductor
 export const CONDUCTOR_NATIVE_CHAIN = CHAIN_ID_AVAX;
-export const CONDUCTOR_NATIVE_ADDRESS = "0x9C10b15dBd2CD85dd10dc07d2B49CB7c32e50c3c";
+export const CONDUCTOR_NATIVE_ADDRESS =
+  "0xe9B4337f3ec72c6EAa519475E54CB2ba7621A7e0";
 // kyc
 export const KYC_AUTHORITY = "0x1dF62f291b2E969fB0849d99D9Ce41e2F137006e";
-export const KYC_PRIVATE = "b0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773";
+export const KYC_PRIVATE =
+  "b0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773";
 // guardians
 export const WORMHOLE_RPCS = ["https://wormhole-v2-testnet-api.certus.one"];
 // solana
 export const SOLANA_RPC = "https://api.devnet.solana.com";
-export const SOLANA_CORE_BRIDGE_ADDRESS = new web3.PublicKey("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
-export const SOLANA_TOKEN_BRIDGE_ADDRESS = new web3.PublicKey("DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe");
-export const SOLANA_CONTRIBUTOR_ADDRESS = new web3.PublicKey("iccofFrR4XWprDLTbLJsXqp7dL4rBBY6v3dZunLrXTB");
+export const SOLANA_CORE_BRIDGE_ADDRESS = new web3.PublicKey(
+  "3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5"
+);
+export const SOLANA_TOKEN_BRIDGE_ADDRESS = new web3.PublicKey(
+  "DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe"
+);
+export const SOLANA_CONTRIBUTOR_ADDRESS = new web3.PublicKey(
+  "NEXaa1zDNLJ9AqwEd7LipQTge4ygeVVHyr8Tv7X2FCn"
+);
 // avax
 export const WAVAX_ADDRESS = "0xd00ae08403B9bbb9124bB305C09058E32C39A48c";
-export const AVAX_CORE_BRIDGE_ADDRESS = "0x7bbcE28e64B3F8b84d876Ab298393c38ad7aac4C";
-export const AVAX_TOKEN_BRIDGE_ADDRESS = "0x61E44E506Ca5659E6c0bba9b678586fA2d729756";
+export const AVAX_CORE_BRIDGE_ADDRESS =
+  "0x7bbcE28e64B3F8b84d876Ab298393c38ad7aac4C";
+export const AVAX_TOKEN_BRIDGE_ADDRESS =
+  "0x61E44E506Ca5659E6c0bba9b678586fA2d729756";
