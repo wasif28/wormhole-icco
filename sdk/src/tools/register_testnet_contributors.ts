@@ -65,7 +65,7 @@ async function main() {
       console.info("Registering contributor on network:", network, "txHash:", tx.transactionHash);
     } catch (error: any) {
       const errorMsg = error.toString();
-      if (errorMsg.includes("chain already registered")) {
+      if (errorMsg.includes("2")) {
         console.info(network, "has already been registered!");
       } else {
         console.log(errorMsg);
