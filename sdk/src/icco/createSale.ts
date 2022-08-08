@@ -40,7 +40,6 @@ export async function createSaleOnEth(
   saleEnd: ethers.BigNumberish,
   unlockTimestamp: ethers.BigNumberish,
   acceptedTokens: AcceptedToken[],
-  solanaTokenAccount: ethers.BytesLike,
   recipientAddress: string,
   refundRecipientAddress: string,
   authority: string, // kyc
@@ -69,7 +68,6 @@ export async function createSaleOnEth(
     unlockTimestamp: ethers.BigNumber.from(unlockTimestamp),
     recipient: recipientAddress,
     refundRecipient: refundRecipientAddress,
-    solanaTokenAccount: solanaTokenAccount,
     authority: authority,
   };
 

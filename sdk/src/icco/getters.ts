@@ -37,6 +37,7 @@ export async function getSaleFromConductorOnEth(
     contributionsCollected: sale.contributionsCollected,
     isSealed: sale.isSealed,
     isAborted: sale.isAborted,
+    authority: sale.authority,
   };
 }
 
@@ -60,10 +61,12 @@ export async function getSaleFromContributorOnEth(
     acceptedTokensChains: sale.acceptedTokensChains,
     acceptedTokensAddresses: sale.acceptedTokensAddresses,
     acceptedTokensConversionRates: sale.acceptedTokensConversionRates,
+    disabledAcceptedTokens: sale.disabledAcceptedTokens,
     isSealed: sale.isSealed,
     isAborted: sale.isAborted,
     allocations: sale.allocations,
     excessContributions: sale.excessContributions,
+    authority: sale.authority,
   };
 }
 

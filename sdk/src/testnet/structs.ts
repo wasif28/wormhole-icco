@@ -16,7 +16,6 @@ export interface SaleParams {
   saleDurationSeconds: number;
   lockUpDurationSeconds: number;
   saleStartTimer: number;
-  solanaTokenAccount: string;
   authority: string;
 }
 

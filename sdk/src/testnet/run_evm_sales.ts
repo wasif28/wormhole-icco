@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import {
   initiatorWallet,
   buildAcceptedTokens,
@@ -23,6 +23,8 @@ import {
   getTokenDecimals,
   abortSaleAtContributors,
   claimRefundForContributorOnEth,
+  updateSaleAuthorityOnConductor,
+  authorityUpdatedOnEthContributors,
 } from "./utils";
 import {
   SALE_CONFIG,
@@ -32,11 +34,13 @@ import {
   CONTRIBUTOR_NETWORKS,
   WORMHOLE_ADDRESSES,
   CONDUCTOR_CHAIN_ID,
+  CONDUCTOR_ADDRESS,
+  CHAIN_ID_TO_NETWORK,
 } from "./consts";
 import { Contribution, SaleParams, SealSaleResult } from "./structs";
-import { setDefaultWasm, ChainId, tryUint8ArrayToNative } from "@certusone/wormhole-sdk";
+import { setDefaultWasm, ChainId, tryUint8ArrayToNative, tryNativeToUint8Array } from "@certusone/wormhole-sdk";
 import { MockSale } from "./testCalculator";
-import { getErc20Balance } from "../";
+import { getErc20Balance, makeAcceptedToken, getSaleFromContributorOnEth } from "../";
 import { ethers } from "ethers";
 
 setDefaultWasm("node");
@@ -227,12 +231,17 @@ describe("Testnet ICCO Successful Sales", () => {
   });
 
   it("Undersubscribed Fixed-price Sale", async () => {
+    // This test handles undersubscribed sales (totalRaised < minRaise).
+    // It also updates the sale KYC authority mid-sale,
+    // and attempts to contribute a "disabled" token.
+
     // increase the minRaise and maxRaise significantly so that the test is unsuccessful
     raiseParams["minRaise"] = "999999999";
     raiseParams["maxRaise"] = "999999999";
+    raiseParams["saleDurationSeconds"] += 50; // add some time to test the authority update
 
-    // sale parameters
-    const acceptedTokens = await buildAcceptedTokens(SALE_CONFIG["acceptedTokens"]);
+    // accepted tokens
+    let acceptedTokens = await buildAcceptedTokens(SALE_CONFIG["acceptedTokens"]);
 
     // test calculator object
     const mockSale = new MockSale(
@@ -243,6 +252,22 @@ describe("Testnet ICCO Successful Sales", () => {
       contributions
     );
     const mockSaleResults = await mockSale.getResults();
+
+    // set up for the disabled tokens test
+    {
+      // add new accepted token with an erroneous address (disabled tokens test)
+      const disabledToken = makeAcceptedToken(CONDUCTOR_CHAIN_ID, CONDUCTOR_ADDRESS, acceptedTokens[0].conversionRate);
+      acceptedTokens.push(disabledToken);
+
+      // now create a fake contribution for the bad token
+      const fakeContribution: Contribution = {
+        chainId: CONDUCTOR_CHAIN_ID,
+        address: CONDUCTOR_ADDRESS,
+        amount: "420000",
+        key: contributions[0].key,
+      };
+      contributions.unshift(fakeContribution);
+    }
 
     // create and initialize the sale
     const saleInitArray = await createSaleOnEthConductor(
@@ -262,13 +287,46 @@ describe("Testnet ICCO Successful Sales", () => {
     const extraTime: number = 5; // wait an extra 5 seconds
     await waitForSaleToStart(saleInit, extraTime);
 
-    // loop through contributors and safe contribute one by one
+    // loop through contributors and safe contribute one by one (save one contribution for kyc update test)
     console.log("Making contributions to the sale.");
-    for (const contribution of contributions) {
+    for (const contribution of contributions.slice(0, -1)) {
       let successful = false;
       // check if we're contributing a solana token
       successful = await prepareAndExecuteContribution(saleInit.saleId, raiseParams.token, contribution);
-      expect(successful, "Contribution failed").to.be.true;
+
+      // make sure the disabled token fails
+      if (contribution.address == CONDUCTOR_ADDRESS) {
+        expect(successful, "disabled token test failed").to.be.false;
+
+        // confirm that the token is disabled
+        const sale = await getSaleFromContributorOnEth(
+          TESTNET_ADDRESSES[CHAIN_ID_TO_NETWORK.get(contribution.chainId)],
+          testProvider(CHAIN_ID_TO_NETWORK.get(contribution.chainId)),
+          saleInit.saleId
+        );
+        expect(sale.disabledAcceptedTokens[acceptedTokens.length - 1], "token was not disabled").to.be.true;
+      } else {
+        // make sure real contributions are successful
+        expect(successful, "Contribution failed").to.be.true;
+      }
+    }
+
+    // update the authority for the sale and make a contribution
+    {
+      // update the sale authority
+      const authorityUpdatedVaa: Uint8Array = await updateSaleAuthorityOnConductor(saleInit.saleId);
+      await authorityUpdatedOnEthContributors(authorityUpdatedVaa);
+      console.log("KYC Authority updated");
+
+      // make contribution signed by the new authority
+      let successful = false;
+      successful = await prepareAndExecuteContribution(
+        saleInit.saleId,
+        raiseParams.token,
+        contributions[contributions.length - 1],
+        true
+      );
+      expect(successful, "Contribution with new authority failed").to.be.true;
     }
 
     // wait for sale to end
@@ -322,11 +380,14 @@ describe("Testnet ICCO Successful Sales", () => {
     // claim allocations on contributors
     // find unique refunds to claim
     const uniqueContributors = findUniqueContributions(contributions, acceptedTokens);
-
+    
     console.log("Claiming contributor refunds.");
     for (let i = 0; i < uniqueContributors.length; i++) {
-      const successful = await claimRefundForContributorOnEth(saleInit, uniqueContributors[i]);
-      expect(successful, "Failed to claim refund").to.be.true;
+      // skip the disabled token (which uses the Conductor's address) 
+      if (uniqueContributors[i].address != CONDUCTOR_ADDRESS) {
+        const successful = await claimRefundForContributorOnEth(saleInit, uniqueContributors[i]);
+        expect(successful, "Failed to claim refund").to.be.true;
+      }
     }
   });
 });

@@ -64,18 +64,21 @@ import {
   WORMHOLE_RPCS,
   SOLANA_RPC,
   AVAX_TOKEN_BRIDGE_ADDRESS,
+  NEW_KYC_AUTHORITY_KEY,
 } from "./consts";
 import { TokenConfig, Contribution, SealSaleResult, SaleParams, SaleSealed, AcceptedToken, SaleInit } from "./structs";
-import { signContributionOnEth } from "./kyc";
+import { signContributionOnEth, signNewAuthorityOnEth } from "./kyc";
 import {
   claimExcessContributionOnEth,
   getErc20Balance,
   getExcessContributionIsClaimedOnEth,
   getSaleExcessContributionOnEth,
+  saleAuthorityUpdatedOnEth,
 } from "../icco";
 import { web3 } from "@project-serum/anchor";
 import { getAssociatedTokenAddress, getMint } from "@solana/spl-token";
 import { getBlockTime, wait } from "../anchor/utils";
+import { updateSaleAuthorityOnEth } from "../icco/updateSaleAuthority";
 
 export async function extractVaaPayload(signedVaa: Uint8Array): Promise<Uint8Array> {
   const { parse_vaa } = await importCoreWasm();
@@ -192,8 +195,7 @@ export async function createSaleOnEthAndGetVaa(
   recipientAddress: string,
   refundRecipientAddress: string,
   authority: string,
-  acceptedTokens: AcceptedToken[],
-  solanaTokenAccount: ethers.BytesLike
+  acceptedTokens: AcceptedToken[]
 ): Promise<Uint8Array[]> {
   // create the sale on the conductor
   const receipt = await createSaleOnEth(
@@ -209,7 +211,6 @@ export async function createSaleOnEthAndGetVaa(
     saleEnd,
     unlockTimestamp,
     acceptedTokens,
-    solanaTokenAccount,
     recipientAddress,
     refundRecipientAddress,
     authority,
@@ -250,13 +251,7 @@ export async function createSaleOnEthConductor(
   const saleStart = getCurrentTime() + raiseParams.saleStartTimer;
   const saleEnd = saleStart + raiseParams.saleDurationSeconds;
   const unlockTimestamp = saleEnd + raiseParams.lockUpDurationSeconds;
-
-  // create fake solana ATA
-  const solanaTokenAccount = nativeToUint8Array(
-    raiseParams.localTokenAddress,
-    CHAIN_ID_ETH // will be CHAIN_ID_SOLANA with a real token
-  );
-
+  
   // create the sale
   const saleInitVaas = await createSaleOnEthAndGetVaa(
     initiatorConductorWallet,
@@ -274,8 +269,7 @@ export async function createSaleOnEthConductor(
     raiseParams.recipient,
     raiseParams.refundRecipient,
     raiseParams.authority,
-    acceptedTokens,
-    solanaTokenAccount
+    acceptedTokens
   );
   return saleInitVaas;
 }
@@ -363,8 +357,16 @@ export async function parseUnits(contribution: Contribution, wallet: ethers.Wall
 export async function prepareAndExecuteContribution(
   saleId: ethers.BigNumberish,
   saleTokenAddress: string,
-  contribution: Contribution
+  contribution: Contribution,
+  useNewAuthority: boolean = false
 ): Promise<boolean> {
+  let kycAuthority = KYC_AUTHORITY_KEY;
+
+  // check if we want to use a new authority key
+  if (useNewAuthority) {
+    kycAuthority = NEW_KYC_AUTHORITY_KEY;
+  }
+
   // make sure contribution is for an accepted token
   let tokenIndex = 0;
 
@@ -402,7 +404,7 @@ export async function prepareAndExecuteContribution(
     amount,
     wallet.address,
     totalContribution,
-    KYC_AUTHORITY_KEY
+    kycAuthority
   );
 
   // make the contribution
@@ -417,7 +419,6 @@ export async function prepareAndExecuteContribution(
       signature
     );
   } catch (error: any) {
-    console.log(error);
     return false;
   }
   return true;
@@ -1017,4 +1018,46 @@ export async function claimRefundForContributorOnEth(saleInit: SaleInit, contrib
   );
 
   return isClaimed;
+}
+
+export async function updateSaleAuthorityOnConductor(saleId: ethers.BigNumberish): Promise<Uint8Array> {
+  // sign the data with the new key
+  const signature = signNewAuthorityOnEth(
+    tryNativeToHexString(CONDUCTOR_ADDRESS, CONDUCTOR_CHAIN_ID)!,
+    saleId,
+    NEW_KYC_AUTHORITY_KEY
+  );
+
+  // get the new authority public key from the signer key
+  const newAuthorityWallet: ethers.Wallet = new ethers.Wallet(NEW_KYC_AUTHORITY_KEY, testProvider(CONDUCTOR_NETWORK));
+
+  // make the contribution
+  let receipt;
+  try {
+    receipt = await updateSaleAuthorityOnEth(
+      CONDUCTOR_ADDRESS,
+      initiatorWallet(CONDUCTOR_NETWORK),
+      saleId,
+      newAuthorityWallet.address,
+      signature
+    );
+  } catch (error: any) {
+    console.log(error);
+  }
+
+  return getSignedVaaFromReceiptOnEth(CONDUCTOR_CHAIN_ID, CONDUCTOR_ADDRESS, receipt, CONDUCTOR_NETWORK);
+}
+
+export async function authorityUpdatedOnEthContributors(authorityUpdatedVaa: Uint8Array) {
+  const receipts = new Map<ChainId, ethers.ContractReceipt>();
+  for (let [chainId, network] of CHAIN_ID_TO_NETWORK) {
+    const receipt = await saleAuthorityUpdatedOnEth(
+      TESTNET_ADDRESSES[network],
+      authorityUpdatedVaa,
+      initiatorWallet(network)
+    );
+    receipts.set(chainId, receipt);
+  }
+
+  console.log("Sale authority updated on contributors.");
 }

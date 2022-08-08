@@ -66,7 +66,7 @@ export async function parseSolanaSaleInit(payload: Uint8Array): Promise<SolanaSa
   return {
     payloadId: buffer.readUInt8(0),
     saleId: ethers.BigNumber.from(payload.slice(1, 33)).toString(),
-    solanaTokenAccount: uint8ArrayToHex(payload.slice(33, 65)),
+    tokenAddress: uint8ArrayToHex(payload.slice(33, 65)),
     tokenChain: buffer.readUInt16BE(65),
     tokenDecimals: buffer.readUInt8(67),
     saleStart: ethers.BigNumber.from(payload.slice(68, 100)).toString(),

@@ -37,6 +37,8 @@ export interface Sale {
   // state
   isSealed: boolean;
   isAborted: boolean;
+  // kyc authority
+  authority: string;
 }
 
 export interface ConductorSale extends Sale {
@@ -61,6 +63,7 @@ export interface ContributorSale {
   acceptedTokensChains: number[];
   acceptedTokensAddresses: ethers.BytesLike[];
   acceptedTokensConversionRates: ethers.BigNumberish[];
+  disabledAcceptedTokens: boolean[];
   // state
   isSealed: boolean;
   isAborted: boolean;
@@ -68,6 +71,8 @@ export interface ContributorSale {
   tokenDecimals: number;
   allocations: ethers.BigNumberish[];
   excessContributions: ethers.BigNumberish[];
+  // authority
+  authority: string;
 }
 
 export interface AcceptedToken {
@@ -98,7 +103,7 @@ export interface SolanaToken {
 export interface SolanaSaleInit {
   payloadId: number;
   saleId: ethers.BigNumberish;
-  solanaTokenAccount: ethers.BytesLike;
+  tokenAddress: ethers.BytesLike;
   tokenChain: number;
   tokenDecimals: number;
   saleStart: ethers.BigNumberish;
@@ -119,11 +124,7 @@ export interface SaleSealed {
   allocations: Allocation[];
 }
 
-export function makeAcceptedToken(
-  chainId: ChainId,
-  address: string,
-  conversion: ethers.BigNumberish
-): AcceptedToken {
+export function makeAcceptedToken(chainId: ChainId, address: string, conversion: ethers.BigNumberish): AcceptedToken {
   return {
     tokenChain: chainId,
     tokenAddress: nativeToUint8Array(address, chainId),

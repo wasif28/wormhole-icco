@@ -15,3 +15,4 @@ export * from "./saleSealed";
 export * from "./sealSale";
 export * from "./signedVaa";
 export * from "./structs";
+export * from "./saleAuthorityUpdated";
