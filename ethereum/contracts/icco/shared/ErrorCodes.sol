@@ -53,7 +53,9 @@ contract ICCOErrorCodes {
             errorString = "acceptedTokens.tokenAddress must not be bytes32(0)";
         } else if (code == 22) {
             errorString = "too many solana tokens";
-        } 
+        } else if ( code == 23) {
+            errorString = "total unlocks not equal to 100%";
+        }
     }
         
     function abortSaleBeforeStartTime(uint256 code) public pure returns (string memory errorString) {

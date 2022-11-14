@@ -48,6 +48,7 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
 
         /// @dev cache to save on gas
         uint256 acceptedTokensLength = saleInit.acceptedTokens.length;
+        uint256 vestedTokensLength = saleInit.vestings.length;
 
         /// save the parsed sale information 
         ContributorStructs.Sale memory sale = ContributorStructs.Sale({
@@ -67,7 +68,10 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
             isSealed : false,
             isAborted : false,
             allocations : new uint256[](acceptedTokensLength),
-            excessContributions : new uint256[](acceptedTokensLength)
+            excessContributions : new uint256[](acceptedTokensLength),
+            isVested : ( saleInit.isVested == uint8(1) ? true : false ),
+            vestingUnlockTimestamp : new uint256[](vestedTokensLength),
+            vestingUnlockPercentage : new uint256[](vestedTokensLength)
         });
 
         /// make sure the VAA is for an active sale
@@ -93,6 +97,18 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
             sale.acceptedTokensAddresses[i] = saleInit.acceptedTokens[i].tokenAddress;
             sale.acceptedTokensConversionRates[i] = saleInit.acceptedTokens[i].conversionRate;
             unchecked { i += 1; }
+        }
+
+        /// populate the vestings arrays is vesting enabled for the project
+        if(saleInit.isVested == 1){
+            uint256 totalSanitaryCheck;
+            for (uint256 i = 0; i < vestedTokensLength;) {
+               sale.vestingUnlockTimestamp[i] = saleInit.vestings[i].vestingUnlockTimestamp;
+               sale.vestingUnlockPercentage[i] = saleInit.vestings[i].vestingUnlockPercentage;
+               totalSanitaryCheck += sale.vestingUnlockPercentage[i];
+               unchecked { i += 1; } 
+            }
+            require(totalSanitaryCheck == 100, "Total Unlocks Not Equal to 100%");
         }
 
         /// save the sale in contract storage

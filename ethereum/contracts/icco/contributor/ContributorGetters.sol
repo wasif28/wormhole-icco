@@ -113,4 +113,16 @@ contract ContributorGetters is ContributorState {
     function isTokenDisabled(uint256 saleId, uint256 tokenIndex) public view returns (bool) {
         return _state.sales[saleId].disabledAcceptedTokens[tokenIndex];
     }
+
+    function getNumberOfVestings(uint256 saleId) public view returns (uint256) {
+        return _state.numberOfVestings[saleId];
+    }
+
+    function getVestings(uint256 saleId, uint256 vestingIndex) public view returns (ICCOStructs.Vesting memory vesting) {
+        return _state.vestings[saleId][vestingIndex];
+    }
+
+    function getVestingsClaimed(uint256 saleId, uint256 tokenIndex, address contributor, uint256 vestingIndex) public view returns (bool) {
+        return _state.vestingClaimed[saleId][tokenIndex][contributor][vestingIndex];
+    }
 }

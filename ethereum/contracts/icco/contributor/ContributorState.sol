@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 
 import "./ContributorStructs.sol";
+import "../shared/ICCOStructs.sol";
 
 contract ContributorEvents {
     event EventSaleInit (
@@ -84,6 +85,15 @@ contract ContributorStorage {
 
         /// sale id > [token id > contributor > isClaimed
         mapping(uint256 => mapping(uint256 => mapping(address => bool))) excessContributionIsClaimed;
+
+        /// sale id > number of vestings
+        mapping(uint256 => uint256) numberOfVestings;
+
+        /// sale id > vesting iterations > vesting percentages
+        mapping(uint256 => mapping(uint256 => ICCOStructs.Vesting)) vestings;
+
+        /// sale id > token id > contributor > vesting id > isClaimed
+        mapping(uint256 => mapping(uint256 => mapping(address => mapping(uint256 => bool)))) vestingClaimed;
 
         /// @dev storage gap 
         uint256[50] ______gap;
