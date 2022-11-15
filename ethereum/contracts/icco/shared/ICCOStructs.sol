@@ -122,6 +122,10 @@ library ICCOStructs {
         address authority;
         /// unlock timestamp (when tokens can be claimed)
         uint256 unlockTimestamp;
+        /// vesting enabled boolean (true = 1 , false = 0)
+        uint8 isVested;
+        /// vesting details
+        Vesting[] vestings;
     }
 
     struct ContributionsSealed {
@@ -215,7 +219,9 @@ library ICCOStructs {
             encodeSolanaTokens(solanaSaleInit.acceptedTokens),
             solanaSaleInit.recipient,
             solanaSaleInit.authority,
-            solanaSaleInit.unlockTimestamp
+            solanaSaleInit.unlockTimestamp,
+            solanaSaleInit.isVested,
+            encodeVestings(solanaSaleInit.vestings)
         );
     }
 
