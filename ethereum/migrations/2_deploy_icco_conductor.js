@@ -3,7 +3,6 @@ const ConductorImplementation = artifacts.require("ConductorImplementation");
 const ConductorSetup = artifacts.require("ConductorSetup");
 const ICCOStructs = artifacts.require("ICCOStructs");
 const ErrorCodes = artifacts.require("ICCOErrorCodes");
-const ConductorLibraries = artifacts.require("HelperLibrary")
 
 const ethereumRootPath = `${__dirname}/..`;
 const DeploymentConfig = require(`${ethereumRootPath}/icco_deployment_config.js`);
@@ -22,10 +21,6 @@ module.exports = async function(deployer, network) {
   // deploy ICCOStructs library
   await deployer.deploy(ICCOStructs);
   await deployer.link(ICCOStructs, ConductorImplementation);
-
-  // deploy ConductorLibraries HelperLibrary library
-  await deploy.deploy(ConductorLibraries);
-  await deployer.ling(ConductorLibraries, ConductorImplementation);
 
   // deploy conductor implementation
   await deployer.deploy(ConductorImplementation);
