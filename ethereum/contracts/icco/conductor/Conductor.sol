@@ -102,8 +102,7 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
      */
     function createSale(
         ICCOStructs.Raise memory raise,
-        ICCOStructs.Token[] memory acceptedTokens,
-        ICCOStructs.Vesting[] memory vestings
+        ICCOStructs.Token[] memory acceptedTokens   
     ) public payable nonReentrant returns (
         uint256 saleId,
         uint256 wormholeSequence,
@@ -178,11 +177,7 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             /// sale identifiers
             isSealed :  false,
             isAborted : false,
-            isFixedPrice : raise.isFixedPrice,
-            /// vesting
-            isVested : raise.isVested,
-            vestingUnlockTimestamp : new uint256[](vestings.length),
-            vestingUnlockPercentage : new uint256[](vestings.length)
+            isFixedPrice : raise.isFixedPrice
         });
 
         /// populate the accepted token arrays
@@ -220,18 +215,6 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             unchecked { i += 1; }
         }
 
-        /// populate the vestings arrays is vesting enabled for the project
-        if(raise.isVested){
-            uint256 totalSanitaryCheck;
-            for (uint256 i = 0; i < vestings.length;) {
-               sale.vestingUnlockTimestamp[i] = vestings[i].vestingUnlockTimestamp;
-               sale.vestingUnlockPercentage[i] = vestings[i].vestingUnlockPercentage;
-               totalSanitaryCheck += sale.vestingUnlockPercentage[i];
-               unchecked { i += 1; } 
-            }
-            require(totalSanitaryCheck == 100, "23");
-        }
-
         /// save number of accepted solana tokens in the sale
         sale.solanaAcceptedTokensCount = uint8(_state.solanaAcceptedTokens.length);
 
@@ -260,11 +243,7 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             /// public key of kyc authority 
             authority : raise.authority,
             /// unlock timestamp (when tokens can be claimed)
-            unlockTimestamp : raise.unlockTimestamp,
-            /// vesting enabled boolean
-            isVested: (raise.isVested ? uint8(1): uint8(0)),
-            /// vesting details
-            vestings: vestings
+            unlockTimestamp : raise.unlockTimestamp
         }); 
 
         /// @dev send encoded SaleInit struct to Contributors via wormhole.        

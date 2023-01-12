@@ -36,10 +36,5 @@ contract ContributorStructs {
 
         uint256[] allocations;
         uint256[] excessContributions;
-
-        /// vestings
-        bool isVested;
-        uint256[] vestingUnlockTimestamp;
-        uint256[] vestingUnlockPercentage;
     }
 }

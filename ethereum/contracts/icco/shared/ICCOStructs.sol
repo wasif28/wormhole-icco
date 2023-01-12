@@ -37,8 +37,6 @@ library ICCOStructs {
     struct Raise {
         /// fixed-price sale boolean
         bool isFixedPrice;
-        /// vesting enabled bool
-        bool isVested;
         /// sale token address
         bytes32 token;
         /// sale token chainId
@@ -60,14 +58,7 @@ library ICCOStructs {
         /// refund recipient in case the sale is aborted
         address refundRecipient;
         /// public key of kyc authority 
-        address authority;
-    }
-
-    struct Vesting {
-        /// vesting unlock timestamp when to unlock
-        uint256 vestingUnlockTimestamp;
-        /// vesting unlock percentage to unlock 
-        uint256 vestingUnlockPercentage;
+        address authority; 
     }
 
     struct SaleInit {
@@ -93,10 +84,6 @@ library ICCOStructs {
         address authority;
         /// unlock timestamp (when tokens can be claimed)
         uint256 unlockTimestamp;
-        /// vesting enabled boolean (true = 1 , false = 0)
-        uint8 isVested;
-        /// vesting details
-        Vesting[] vestings;
     }
 
     struct SolanaSaleInit {
@@ -197,9 +184,7 @@ library ICCOStructs {
             encodeTokens(saleInit.acceptedTokens),
             saleInit.recipient,
             saleInit.authority,
-            saleInit.unlockTimestamp,
-            saleInit.isVested,
-            encodeVestings(saleInit.vestings)
+            saleInit.unlockTimestamp
         );
     }
 
@@ -258,13 +243,6 @@ library ICCOStructs {
         saleInit.unlockTimestamp = encoded.toUint256(index);
         index += 32;
 
-        saleInit.isVested = encoded.toUint8(index);
-        index += 1;
-
-        uint256 len2 = 1 + 64 * uint256(uint8(encoded[index]));
-        saleInit.vestings = parseVestings(encoded.slice(index, len2));
-        index += len2;
-
         require(encoded.length == index, "invalid SaleInit");
     }
 
@@ -278,20 +256,6 @@ library ICCOStructs {
                 tokens[i].tokenAddress,
                 tokens[i].tokenChain,
                 tokens[i].conversionRate
-            );
-            unchecked { i += 1; }
-        }
-    }
-
-    function encodeVestings(Vesting[] memory vestings) public pure returns (bytes memory encoded) {
-        uint256 vestingsLength = vestings.length;
-        encoded = abi.encodePacked(uint8(vestingsLength));
-
-        for (uint256 i = 0; i < vestingsLength;) {
-            encoded = abi.encodePacked(
-                encoded,
-                vestings[i].vestingUnlockTimestamp,
-                vestings[i].vestingUnlockPercentage
             );
             unchecked { i += 1; }
         }
@@ -322,20 +286,6 @@ library ICCOStructs {
             tokens[i].tokenAddress   = encoded.toBytes32( 1 + i * 50);
             tokens[i].tokenChain     = encoded.toUint16( 33 + i * 50);
             tokens[i].conversionRate = encoded.toUint128(35 + i * 50);
-            unchecked { i += 1; }
-        }
-    }
-
-    function parseVestings(bytes memory encoded) public pure returns (Vesting[] memory vestings) {
-        require(encoded.length % 64 == 1, "invalid Vesting[]");
-        
-        uint8 len = uint8(encoded[0]);
-
-        vestings = new Vesting[](len);
-
-        for (uint256 i = 0; i < len;) {
-            vestings[i].vestingUnlockTimestamp   = encoded.toUint256( 1 + i * 64);
-            vestings[i].vestingUnlockPercentage  = encoded.toUint256( 33 + i * 64);
             unchecked { i += 1; }
         }
     }

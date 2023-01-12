@@ -83,16 +83,4 @@ contract ContributorSetters is ContributorState, Context {
     function setExcessContribution(uint256 saleId, uint256 tokenIndex, uint256 excessContribution) internal {
         _state.sales[saleId].excessContributions[tokenIndex] = excessContribution;
     }
-
-    function setNumberOfVestings(uint256 saleId, uint256 numberOfVestings) internal {
-        _state.numberOfVestings[saleId] = numberOfVestings;
-    }
-
-    function setVestings(uint256 saleId, uint256 vestingIndex, ICCOStructs.Vesting memory vesting) internal {
-        _state.vestings[saleId][vestingIndex] = vesting;
-    }
-
-    function setVestingsClaimed(uint256 saleId, uint256 tokenIndex, address contributor, uint256 vestingIndex) internal {
-        _state.vestingClaimed[saleId][tokenIndex][contributor][vestingIndex] = true;
-    }
 }
