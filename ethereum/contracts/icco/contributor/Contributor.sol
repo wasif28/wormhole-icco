@@ -48,6 +48,7 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
 
         /// @dev cache to save on gas
         uint256 acceptedTokensLength = saleInit.acceptedTokens.length;
+        uint256 vestedTokensLength = saleInit.vestings.length;
 
         /// save the parsed sale information 
         ContributorStructs.Sale memory sale = ContributorStructs.Sale({
@@ -69,8 +70,8 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
             allocations : new uint256[](acceptedTokensLength),
             excessContributions : new uint256[](acceptedTokensLength),
             isVested : ( saleInit.isVested == uint8(1) ? true : false ),
-            vestingUnlockTimestamp : new uint256[](saleInit.vestings.length),
-            vestingUnlockPercentage : new uint256[](saleInit.vestings.length)
+            vestingUnlockTimestamp : new uint256[](vestedTokensLength),
+            vestingUnlockPercentage : new uint256[](vestedTokensLength)
         });
 
         /// make sure the VAA is for an active sale
@@ -100,19 +101,14 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
 
         /// populate the vestings arrays is vesting enabled for the project
         if(saleInit.isVested == 1){
-            for (uint256 i = 0; i < saleInit.vestings.length;) {
+            uint256 totalSanitaryCheck;
+            for (uint256 i = 0; i < vestedTokensLength;) {
                sale.vestingUnlockTimestamp[i] = saleInit.vestings[i].vestingUnlockTimestamp;
                sale.vestingUnlockPercentage[i] = saleInit.vestings[i].vestingUnlockPercentage;
-               setVestings(saleInit.saleID, i, ICCOStructs.Vesting({
-                    vestingUnlockTimestamp: saleInit.vestings[i].vestingUnlockTimestamp, 
-                    vestingUnlockPercentage: saleInit.vestings[i].vestingUnlockPercentage
-                })
-                );
+               totalSanitaryCheck += sale.vestingUnlockPercentage[i];
                unchecked { i += 1; } 
             }
-            
-            /// vestings Set in contract storage
-            setNumberOfVestings(saleInit.saleID, saleInit.vestings.length);
+            require(totalSanitaryCheck == 100, "Total Unlocks Not Equal to 100%");
         }
 
         /// save the sale in contract storage

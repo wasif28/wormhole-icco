@@ -299,11 +299,7 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
                 /// public key of kyc authority 
                 authority: raise.authority,
                 /// unlock timestamp (when tokens can be claimed)
-                unlockTimestamp : raise.unlockTimestamp,
-                /// vesting enabled boolean
-                isVested: (raise.isVested ? uint8(1): uint8(0)),
-                /// vesting details
-                vestings: vestings
+                unlockTimestamp : raise.unlockTimestamp
             });
 
             /// @dev send encoded SolanaSaleInit struct to the solana Contributor
