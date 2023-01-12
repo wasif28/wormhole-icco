@@ -25,7 +25,7 @@ module.exports = async function(deployer, network) {
 
   // deploy ConductorLibraries HelperLibrary library
   await deploy.deploy(ConductorLibraries);
-  await deployer.link(ConductorLibraries, ConductorImplementation);
+  await deployer.ling(ConductorLibraries, ConductorImplementation);
 
   // deploy conductor implementation
   await deployer.deploy(ConductorImplementation);
