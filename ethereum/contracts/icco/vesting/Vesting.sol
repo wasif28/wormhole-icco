@@ -65,16 +65,13 @@ contract VestingWallet is Context, ReentrancyGuard {
     IContributor public _contributor;
     uint256 public _saleId;
 
-    /**
-     * @dev Set the beneficiary, start timestamp and vesting duration of the vesting wallet.
-     */
     constructor(Vesting memory vestingDetails, address contributor) {
         
         _vestingInformation = vestingDetails;
         _contributor = IContributor(contributor);
 
         uint256 index = 0;
-
+        
         if(vestingDetails._cliffStartTimeInSeconds > 0){
             vestingUnlockTimes.push(vestingDetails._cliffStartTimeInSeconds);
             vestingPercentages.push(vestingDetails._cliffPercentage);
