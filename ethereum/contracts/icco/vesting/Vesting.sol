@@ -71,7 +71,7 @@ contract VestingWallet is Context, ReentrancyGuard {
         _contributor = IContributor(contributor);
 
         uint256 index = 0;
-        
+
         if(vestingDetails._cliffStartTimeInSeconds > 0){
             vestingUnlockTimes.push(vestingDetails._cliffStartTimeInSeconds);
             vestingPercentages.push(vestingDetails._cliffPercentage);
@@ -117,7 +117,6 @@ contract VestingWallet is Context, ReentrancyGuard {
 
         /// make sure the sale is sealed and not aborted
         (bool isSealed, bool isAborted) = _contributor.getSaleStatus(saleId);
-        (, , uint256 unlockTimestamp) = _contributor.getSaleTimeframe(saleId);
 
         require(!isAborted, "token sale is aborted");
         require(isSealed, "token sale is not yet sealed");
@@ -158,7 +157,7 @@ contract VestingWallet is Context, ReentrancyGuard {
                 "All Vestings Claimed Already"
             );
         
-        bool claimedIterations = 0;
+        bool claimedIterations;
         for (uint256 i = 0; i < numberOfVestings; i++) {
                 if (block.timestamp >= vestingUnlockTimes[i]){
                     if(alreadyClaimed[msg.sender][tokenIndex][i] != true){
@@ -167,7 +166,7 @@ contract VestingWallet is Context, ReentrancyGuard {
                              * vestingPercentages[i] /
                             100; 
 
-                        claimedIterations++;
+                        claimedIterations = true;
                         alreadyClaimed[msg.sender][tokenIndex][i] = true;
                         SafeERC20.safeTransfer(IERC20(tokenAddress), msg.sender, thisAllocation); 
                         /// emit EventClaimAllocation event.
@@ -175,7 +174,7 @@ contract VestingWallet is Context, ReentrancyGuard {
                     }
                 }
             }
-        require(claimedIterations > 0, "Your claimable vestings are not unlocked yet");
+        require(claimedIterations, "Your claimable vestings are not unlocked yet");
     }
 
 }

@@ -102,7 +102,8 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
      */
     function createSale(
         ICCOStructs.Raise memory raise,
-        ICCOStructs.Token[] memory acceptedTokens   
+        ICCOStructs.Token[] memory acceptedTokens,
+        ICCOStructs.Vesting[] memory vestings
     ) public payable nonReentrant returns (
         uint256 saleId,
         uint256 wormholeSequence,
@@ -177,7 +178,11 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             /// sale identifiers
             isSealed :  false,
             isAborted : false,
-            isFixedPrice : raise.isFixedPrice
+            isFixedPrice : raise.isFixedPrice,
+            /// vesting
+            isVested: raise.isVested,
+            vestingContracts: new bytes32[](vestings.length),
+            vestingChains: new uint16[](vestings.length)
         });
 
         /// populate the accepted token arrays
@@ -215,6 +220,12 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             unchecked { i += 1; }
         }
 
+        for (uint256 i = 0; i < vestings.length;) {
+            sale.vestingContracts[i] = vestings[i].vestingContractAddress;
+            sale.vestingChains[i] = vestings[i].vestingContractChain;
+            unchecked { i += 1; }
+        }
+
         /// save number of accepted solana tokens in the sale
         sale.solanaAcceptedTokensCount = uint8(_state.solanaAcceptedTokens.length);
 
@@ -243,7 +254,11 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             /// public key of kyc authority 
             authority : raise.authority,
             /// unlock timestamp (when tokens can be claimed)
-            unlockTimestamp : raise.unlockTimestamp
+            unlockTimestamp : raise.unlockTimestamp,
+            /// vesting status (if vesting true then 1 else if vesting false then 0)
+            isVested: (raise.isVested ? uint8(1): uint8(0)),
+            /// vesting details
+            vestings: vestings
         }); 
 
         /// @dev send encoded SaleInit struct to Contributors via wormhole.        
@@ -278,7 +293,11 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
                 /// public key of kyc authority 
                 authority: raise.authority,
                 /// unlock timestamp (when tokens can be claimed)
-                unlockTimestamp : raise.unlockTimestamp
+                unlockTimestamp : raise.unlockTimestamp,
+                /// vesting status (if vesting true then 1 else if vesting false then 0)
+                isVested: (raise.isVested ? uint8(1): uint8(0)),
+                /// vesting details
+                vestings: vestings
             });
 
             /// @dev send encoded SolanaSaleInit struct to the solana Contributor

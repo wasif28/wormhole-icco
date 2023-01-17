@@ -48,6 +48,10 @@ contract ConductorStructs {
         bool isSealed;
         bool isAborted;
         bool isFixedPrice;
+        /// vesting
+        bool isVested;
+        bytes32[] vestingContracts;
+        uint16[] vestingChains;
     }
 
     struct SealSaleAccounting {
