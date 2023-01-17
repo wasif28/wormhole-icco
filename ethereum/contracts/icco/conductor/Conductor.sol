@@ -180,9 +180,7 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             isAborted : false,
             isFixedPrice : raise.isFixedPrice,
             /// vesting
-            isVested: raise.isVested,
-            vestingContracts: new bytes32[](vestings.length),
-            vestingChains: new uint16[](vestings.length)
+            isVested: raise.isVested
         });
 
         /// populate the accepted token arrays
@@ -221,8 +219,7 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
         }
 
         for (uint256 i = 0; i < vestings.length;) {
-            sale.vestingContracts[i] = vestings[i].vestingContractAddress;
-            sale.vestingChains[i] = vestings[i].vestingContractChain;
+            setVestingContract(saleId, vestings[i].vestingContractChain, vestings[i].vestingContractAddress);
             unchecked { i += 1; }
         }
 
