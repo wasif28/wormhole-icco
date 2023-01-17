@@ -500,11 +500,20 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
                     if (sale.acceptedTokensChains[i] == chainId()) {
                         /// simple transfer on same chain
                         /// @dev use saleID from sale struct to bypass stack too deep
-                        SafeERC20.safeTransfer(
-                            IERC20(sale.localTokenAddress), 
-                            address(uint160(uint256(contributorWallets(sale.saleID, sale.acceptedTokensChains[i])))),
-                            accounting.allocation
-                        );
+                        if(sale.isVested){
+                            SafeERC20.safeTransfer(
+                                IERC20(sale.localTokenAddress), 
+                                address(uint160(uint256(getVestingContracts(sale.saleID, sale.acceptedTokensChains[i])))),
+                                accounting.allocation
+                            );
+                        }
+                        else{
+                            SafeERC20.safeTransfer(
+                                IERC20(sale.localTokenAddress), 
+                                address(uint160(uint256(contributorWallets(sale.saleID, sale.acceptedTokensChains[i])))),
+                                accounting.allocation
+                            );
+                        }
                     } else {
                         /// adjust allocation for dust after token bridge transfer
                         accounting.allocation = ICCOStructs.deNormalizeAmount(
@@ -519,17 +528,30 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
                             accounting.allocation
                         );
 
-                        tknBridge.transferTokens{
-                            value : feeAccounting.messageFee
-                        }(
-                            sale.localTokenAddress,
-                            accounting.allocation,
-                            sale.acceptedTokensChains[i],
-                            contributorWallets(sale.saleID, sale.acceptedTokensChains[i]),
-                            0,
-                            0
-                        );
-
+                        if(sale.isVested){
+                            tknBridge.transferTokens{
+                                value : feeAccounting.messageFee
+                            }(
+                                sale.localTokenAddress,
+                                accounting.allocation,
+                                sale.acceptedTokensChains[i],
+                                getVestingContracts(sale.saleID, sale.acceptedTokensChains[i]),
+                                0,
+                                0
+                            );
+                        }
+                        else{
+                            tknBridge.transferTokens{
+                                value : feeAccounting.messageFee
+                            }(
+                                sale.localTokenAddress,
+                                accounting.allocation,
+                                sale.acceptedTokensChains[i],
+                                contributorWallets(sale.saleID, sale.acceptedTokensChains[i]),
+                                0,
+                                0
+                            );
+                        }
                         /// uptick fee counter
                         feeAccounting.accumulatedFees += feeAccounting.messageFee;
                     }
