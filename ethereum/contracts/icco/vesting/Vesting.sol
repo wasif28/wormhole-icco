@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.8.0) (finance/VestingWallet.sol)
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/Address.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/Context.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "../contributor/ContributorStructs.sol";
-import "../interfaces/ITokenBridge.sol";
+import "../../interfaces/ITokenBridge.sol";
 
 interface IContributor {
     function chainId() external view returns (uint16);
@@ -24,6 +25,7 @@ interface IContributor {
     function getSaleTotalContribution(uint256 saleId, uint256 tokenIndex) external view returns (uint256 contributed);
     function getSaleContribution(uint256 saleId, uint256 tokenIndex, address contributor) external view returns (uint256 contributed);
     function tokenBridge() external view returns (ITokenBridge);
+    function saleExists(uint256 saleId) external view returns (bool exists);
 }
 
 /**
@@ -36,7 +38,7 @@ interface IContributor {
  * Consequently, if the vesting has already started, any amount of tokens sent to this contract will (at least partly)
  * be immediately releasable.
  */
-contract VestingWallet is Context {
+contract VestingWallet is Context, ReentrancyGuard {
 
     event EventClaimAllocation (
         uint256 saleId,
@@ -66,7 +68,7 @@ contract VestingWallet is Context {
     /**
      * @dev Set the beneficiary, start timestamp and vesting duration of the vesting wallet.
      */
-    constructor(Vesting memory vestingDetails, address contributor) returns(address) {
+    constructor(Vesting memory vestingDetails, address contributor) {
         
         _vestingInformation = vestingDetails;
         _contributor = IContributor(contributor);
@@ -81,10 +83,10 @@ contract VestingWallet is Context {
             index++;
         }
 
-        numberOfVestings += (vestingDetails._linearEndTime - vestingDetails._linearStartTime) / (vestingDetails._linearReleasePeriodInSeconds) ;
+        numberOfVestings += (vestingDetails._linearEndTimeInSeconds - vestingDetails._linearStartTimeInSeconds) / (vestingDetails._linearReleasePeriodInSeconds) ;
 
         for ( uint256 i = index; i < numberOfVestings; i++) {
-            uint256 vestingTime = vestingDetails._linearStartTime + (_linearReleasePeriodInSeconds * i);
+            uint256 vestingTime = vestingDetails._linearStartTimeInSeconds + (vestingDetails._linearReleasePeriodInSeconds * i);
             vestingUnlockTimes.push(vestingTime);
             uint256 vestingPercentage;
             if(vestingDetails._cliffStartTimeInSeconds > 0){
@@ -96,7 +98,6 @@ contract VestingWallet is Context {
             vestingPercentages.push(vestingPercentage);
         }
 
-        return address(this);
     }
 
     /**
@@ -155,14 +156,13 @@ contract VestingWallet is Context {
         }
 
         // Here unlocking tokens according to vesting requirements provided at the start
-
         require(
             alreadyClaimed[msg.sender][tokenIndex][numberOfVestings-1] == false, 
                 "All Vestings Claimed Already"
             );
         
+        bool claimedIterations = 0;
         for (uint256 i = 0; i < numberOfVestings; i++) {
-                
                 if (block.timestamp >= vestingUnlockTimes[i]){
                     if(alreadyClaimed[msg.sender][tokenIndex][i] != true){
                         //success case
@@ -170,6 +170,7 @@ contract VestingWallet is Context {
                              * vestingPercentages[i] /
                             100; 
 
+                        claimedIterations++;
                         alreadyClaimed[msg.sender][tokenIndex][i] = true;
                         SafeERC20.safeTransfer(IERC20(tokenAddress), msg.sender, thisAllocation); 
                         /// emit EventClaimAllocation event.
@@ -177,6 +178,7 @@ contract VestingWallet is Context {
                     }
                 }
             }
+        require(claimedIterations > 0, "Your claimable vestings are not unlocked yet");
     }
 
 }
