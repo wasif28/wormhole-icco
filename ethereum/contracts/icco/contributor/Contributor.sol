@@ -469,7 +469,7 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
      */
     function claimAllocation(uint256 saleId, uint256 tokenIndex) public nonReentrant {
 
-        if(sale.isVested){
+        if(sales(saleId).isVested){
             revert("Vested Sale can only be claimed using the vesting contracts");
         }
 
