@@ -218,9 +218,12 @@ contract Conductor is ConductorGovernance, ConductorEvents, ReentrancyGuard {
             unchecked { i += 1; }
         }
 
-        for (uint256 i = 0; i < vestings.length;) {
-            setVestingContract(saleId, vestings[i].vestingContractChain, vestings[i].vestingContractAddress);
-            unchecked { i += 1; }
+        if(sale.isVested){
+            require(vestings.length > 0, "47");
+            for (uint256 i = 0; i < vestings.length;) {
+                setVestingContract(saleId, vestings[i].vestingContractChain, vestings[i].vestingContractAddress);
+                unchecked { i += 1; }
+            }
         }
 
         /// save number of accepted solana tokens in the sale

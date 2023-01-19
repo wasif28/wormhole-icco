@@ -98,14 +98,16 @@ contract Contributor is ContributorGovernance, ContributorEvents, ReentrancyGuar
             unchecked { i += 1; }
         }
 
-        /// save vestings in storage
-        for (uint256 i = 0; i < saleInit.vestings.length; ) {
-            setVestingContract(saleInit.saleID, saleInit.vestings[i].vestingContractChain, saleInit.vestings[i].vestingContractAddress);
-            unchecked { i += 1; }
+        
+        if(sale.isVested){ // if sale is vested then perform vesting operations
+            /// save vestings in storage
+            for (uint256 i = 0; i < saleInit.vestings.length; ) {
+                setVestingContract(saleInit.saleID, saleInit.vestings[i].vestingContractChain, saleInit.vestings[i].vestingContractAddress);
+                unchecked { i += 1; }
+            }
+            // setting sale id in vesting contract for the specific chain (wormhole chainID)
+            IVesting(address(uint160(uint256(getVestingContracts(saleInit.saleID, chainId()))))).setSaleId(saleInit.saleID);
         }
-
-        // setting sale id in vesting contract for the specific chain (wormhole chainID)
-        IVesting(address(uint160(uint256(getVestingContracts(saleInit.saleID, chainId()))))).setSaleId(saleInit.saleID);
 
         /// save the sale in contract storage
         setSale(saleInit.saleID, sale);
