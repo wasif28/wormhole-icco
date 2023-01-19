@@ -9,6 +9,7 @@ const ethereumRootPath = `${__dirname}/..`;
 const DeploymentConfig = require(`${ethereumRootPath}/icco_deployment_config.js`);
 
 const fs = require("fs");
+const path = require("path");
 
 module.exports = async function(deployer, network) {
   const config = DeploymentConfig[network];
@@ -80,6 +81,21 @@ module.exports = async function(deployer, network) {
       ContributorSetup.address,
       contributorInitData
     );
+  }
+
+  // saves in all cases fresh deployments
+  if(!config.deployImplementationOnly){
+    const fp = path.join(__dirname, "deployedAddresses.json");
+    const contents = fs.existsSync(fp) ? JSON.parse(fs.readFileSync(fp, "utf8")) : {conductor: {} , contributor: []};
+    const contributor = {
+      contributorNetwork: network,
+      contributorChain: parseInt(config.contributorChainId),
+      contributorAddress: TokenSaleContributor.address,
+      contributorImplementation: ContributorImplementation.address
+    }
+    contents.contributor.push(contributor);
+
+    fs.writeFileSync(fp, JSON.stringify(contents, null, 2), "utf8")
   }
 
   // cache address for registration purposes

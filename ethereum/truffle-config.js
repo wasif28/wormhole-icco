@@ -157,5 +157,9 @@ module.exports = {
   plugins: ["@chainsafe/truffle-plugin-abigen", "truffle-plugin-verify", "truffle-contract-size"],
   api_keys: {
     etherscan: process.env.ETHERSCAN_KEY,
+    snowtrace: process.env.SNOWTRACE,
+    polygonscan: process.env.POLYGONSCAN,
+    bscscan: process.env.BSCSCAN,
+    ftmscan: process.env.FTMSCAN,
   },
 };

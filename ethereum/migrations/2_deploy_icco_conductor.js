@@ -8,6 +8,7 @@ const ethereumRootPath = `${__dirname}/..`;
 const DeploymentConfig = require(`${ethereumRootPath}/icco_deployment_config.js`);
 
 const fs = require("fs");
+const path = require("path");
 
 module.exports = async function(deployer, network) {
   const config = DeploymentConfig[network];
@@ -51,6 +52,21 @@ module.exports = async function(deployer, network) {
   // among all the icco contracts. So there should only
   // be three network conditionals, one for each
   // mainnet, testnet and devnet
+
+  // saves in all cases fresh deployments
+  if(!config.deployImplementationOnly){
+
+  const fp = path.join(__dirname, "deployedAddresses.json");
+  const contents = fs.existsSync(fp) ? JSON.parse(fs.readFileSync(fp, "utf8")) : {conductor: {} , contributor: []};
+  const conductor = {
+    conductorAddress: TokenSaleConductor.address,
+    conductorChain: parseInt(config.conductorChainId),
+    conductorImplementation: ConductorImplementation.address
+  }
+  contents.conductor = conductor;
+
+  fs.writeFileSync(fp, JSON.stringify(contents, null, 2), "utf8")
+  }
 
   // devnet
   if (network == "eth_devnet") {
