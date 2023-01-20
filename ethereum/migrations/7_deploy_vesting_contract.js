@@ -10,12 +10,14 @@ module.exports = async function(deployer, network) {
     throw Error("deployment config undefined");
   }
   
+  const nowTime = new Date().getTime / 1000;
+
   const vestingDetails = {
-    _cliffStartTimeInSeconds: "1674218241",
+    _cliffStartTimeInSeconds: (nowTime).toString(),
     _cliffPercentage: "50",
-    _linearStartTimeInSeconds: "1674304641",
-    _linearEndTimeInSeconds: "1675168641",
-    _linearReleasePeriodInSeconds: "86400",
+    _linearStartTimeInSeconds: (nowTime + 60).toString(),
+    _linearEndTimeInSeconds: (nowTime + 3000).toString(),
+    _linearReleasePeriodInSeconds: "60",
   }
 
   const file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
@@ -35,7 +37,7 @@ module.exports = async function(deployer, network) {
     chain: parseInt(config.contributorChainId),
     contractAddress: Vesting.address,
     vestingParameters: vestingDetails,
-    creationEPOCH: new Date().getTime() / 1000
+    creationEPOCH: nowTime
   }
   contents.Vesting.push(VestingDetails);
 

@@ -59,10 +59,10 @@ errors fixed, this patch can be removed.
 
 # Example Scripts to Verify
 
-npm run verify --module=ICCOErrorCodes --contract_address="0x2871641EF7839c03Eb0060e1b337607Ca886E354" --network=fuji
-npm run verify --module=ICCOStructs --contract_address="0xE1e409f5A01681880D2EDa12d289C68DCaD76f39" --network=fuji
-npm run verify --module=ConductorImplementation --contract_address="0xB58b14623aa834735D7bC1661E302A135256b5f7" --network=fuji
-npm run verify --module=ConductorSetup --contract_address="0xcB9335E9F166dF92649EC591394F8cc4E9b0F009" --network=fuji
+npm run verify --module=ICCOErrorCodes --contract_address="0x2871641EF7839c03Eb0060e1b337607Ca886E354" --network=fuji &&
+npm run verify --module=ICCOStructs --contract_address="0xE1e409f5A01681880D2EDa12d289C68DCaD76f39" --network=fuji &&
+npm run verify --module=ConductorImplementation --contract_address="0xB58b14623aa834735D7bC1661E302A135256b5f7" --network=fuji &&
+npm run verify --module=ConductorSetup --contract_address="0xcB9335E9F166dF92649EC591394F8cc4E9b0F009" --network=fuji &&
 npm run verify --module=TokenSaleConductor --contract_address="0x9e5478fcE151326c34A51991D6Ba73A07903a7F8" --network=fuji
 
 npm run verify --module=ICCOStructs --contract_address="0x8B87bC3B133072841c8C7bC222753487f2ed617f" --network=fuji &&

@@ -84,18 +84,31 @@ module.exports = async function(deployer, network) {
   }
 
   // saves in all cases fresh deployments
-  if(!config.deployImplementationOnly){
+  if (!config.deployImplementationOnly) {
     const fp = path.join(__dirname, "deployedAddresses.json");
-    const contents = fs.existsSync(fp) ? JSON.parse(fs.readFileSync(fp, "utf8")) : {conductor: {} , contributor: []};
+    const contents = fs.existsSync(fp)
+      ? JSON.parse(fs.readFileSync(fp, "utf8"))
+      : { conductor: {}, contributor: [] };
     const contributor = {
       contributorNetwork: network,
       contributorChain: parseInt(config.contributorChainId),
       contributorAddress: TokenSaleContributor.address,
-      contributorImplementation: ContributorImplementation.address
-    }
+      contributorContracts: {
+        ICCOStructs: ICCOStructs.address,
+        ContributorImplementation: ContributorImplementation.address,
+        ContributorSetup: ContributorSetup.address,
+        TokenSaleContributor: TokenSaleContributor.address,
+      },
+      verificationString: {
+        ICCOStructs: `npm run verify --module=ICCOStructs --contract_address='${ICCOStructs.address}' --network=${network}`,
+        ContributorImplementation: `npm run verify --module=ContributorImplementation --contract_address='${ContributorImplementation.address}' --network=${network}`,
+        ContributorSetup: `npm run verify --module=ContributorSetup --contract_address='${ContributorSetup.address}' --network=${network}`,
+        TokenSaleContributor: `npm run verify --module=TokenSaleContributor --contract_address='${TokenSaleContributor.address}' --network=${network}`,
+      },
+    };
     contents.contributor.push(contributor);
 
-    fs.writeFileSync(fp, JSON.stringify(contents, null, 2), "utf8")
+    fs.writeFileSync(fp, JSON.stringify(contents, null, 2), "utf8");
   }
 
   // cache address for registration purposes
