@@ -1,0 +1,91 @@
+{
+  "conductor": {
+    "conductorNetwork": "fuji",
+    "conductorChain": 6,
+    "conductorAddress": "0x60582063884126c614519e4a0c30553d2C15A397",
+    "conductorContracts": {
+      "ICCOErrorCodes": "0x3F6caD81717AbB5fa3Da17c33ae548cc17C785D6",
+      "ICCOStructs": "0x2DdB7D894053AAD8700827a5465b7925970E9633",
+      "ConductorImplementation": "0x02e17a60E5c7C6673Af9D7e1A82D59E8b888814F",
+      "ConductorSetup": "0x06dA52fB775E5F361E4120837A187D0b34bCBcD4",
+      "TokenSaleConductor": "0x60582063884126c614519e4a0c30553d2C15A397"
+    },
+    "verificationString": {
+      "ICCOErrorCodes": "truffle run verify ICCOErrorCodes@0x3F6caD81717AbB5fa3Da17c33ae548cc17C785D6 --network=fuji",
+      "ICCOStructs": "truffle run verify ICCOStructs@0x2DdB7D894053AAD8700827a5465b7925970E9633 --network=fuji",
+      "ConductorImplementation": "truffle run verify ConductorImplementation@0x02e17a60E5c7C6673Af9D7e1A82D59E8b888814F --network=fuji",
+      "ConductorSetup": "truffle run verify ConductorSetup@0x06dA52fB775E5F361E4120837A187D0b34bCBcD4 --network=fuji",
+      "TokenSaleConductor": "truffle run verify TokenSaleConductor@0x60582063884126c614519e4a0c30553d2C15A397 --network=fuji"
+    }
+  },
+  "contributor": [
+    {
+      "contributorNetwork": "fuji",
+      "contributorChain": 6,
+      "contributorAddress": "0xD257c9B9367e141553D4Af0006d52a845be81980",
+      "contributorContracts": {
+        "ICCOStructs": "0xf6a32604Bde52b1D0afcB5e0F94800A000Dc344d",
+        "ContributorImplementation": "0xE09767B554803D59101a4FE9753d18E75Fb5cc62",
+        "ContributorSetup": "0x6518511cD48b0C3e838Fa5c3495164C91060009e",
+        "TokenSaleContributor": "0xD257c9B9367e141553D4Af0006d52a845be81980"
+      },
+      "verificationString": {
+        "ICCOStructs": "truffle run verify ICCOStructs@0xf6a32604Bde52b1D0afcB5e0F94800A000Dc344d --network=fuji",
+        "ContributorImplementation": "truffle run verify ContributorImplementation@0xE09767B554803D59101a4FE9753d18E75Fb5cc62 --network=fuji",
+        "ContributorSetup": "truffle run verify ContributorSetup@0x6518511cD48b0C3e838Fa5c3495164C91060009e --network=fuji",
+        "TokenSaleContributor": "truffle run verify TokenSaleContributor@0xD257c9B9367e141553D4Af0006d52a845be81980 --network=fuji"
+      }
+    },
+    {
+      "contributorNetwork": "binance_testnet",
+      "contributorChain": 4,
+      "contributorAddress": "0x5413b6673eDc6F8f26792aa96fe0de3Ee52fE107",
+      "contributorContracts": {
+        "ICCOStructs": "0xaB49908D136FcB94F96D6d3C3AdbFCdC4C78003e",
+        "ContributorImplementation": "0x1fb971338E23fD3ed0A0960EfCF8e0d33082596A",
+        "ContributorSetup": "0xa79BF704262afD63be95FDa03968dbB1e0605d5e",
+        "TokenSaleContributor": "0x5413b6673eDc6F8f26792aa96fe0de3Ee52fE107"
+      },
+      "verificationString": {
+        "ICCOStructs": "truffle run verify ICCOStructs@0xaB49908D136FcB94F96D6d3C3AdbFCdC4C78003e --network=binance_testnet",
+        "ContributorImplementation": "truffle run verify ContributorImplementation@0x1fb971338E23fD3ed0A0960EfCF8e0d33082596A --network=binance_testnet",
+        "ContributorSetup": "truffle run verify ContributorSetup@0xa79BF704262afD63be95FDa03968dbB1e0605d5e --network=binance_testnet",
+        "TokenSaleContributor": "truffle run verify TokenSaleContributor@0x5413b6673eDc6F8f26792aa96fe0de3Ee52fE107 --network=binance_testnet"
+      }
+    },
+    {
+      "contributorNetwork": "mumbai",
+      "contributorChain": 5,
+      "contributorAddress": "0xC1888830dA6a20B44639A97b7dF915858231fab0",
+      "contributorContracts": {
+        "ICCOStructs": "0x1fb971338E23fD3ed0A0960EfCF8e0d33082596A",
+        "ContributorImplementation": "0xa79BF704262afD63be95FDa03968dbB1e0605d5e",
+        "ContributorSetup": "0x5413b6673eDc6F8f26792aa96fe0de3Ee52fE107",
+        "TokenSaleContributor": "0xC1888830dA6a20B44639A97b7dF915858231fab0"
+      },
+      "verificationString": {
+        "ICCOStructs": "truffle run verify ICCOStructs@0x1fb971338E23fD3ed0A0960EfCF8e0d33082596A --network=mumbai",
+        "ContributorImplementation": "truffle run verify ContributorImplementation@0xa79BF704262afD63be95FDa03968dbB1e0605d5e --network=mumbai",
+        "ContributorSetup": "truffle run verify ContributorSetup@0x5413b6673eDc6F8f26792aa96fe0de3Ee52fE107 --network=mumbai",
+        "TokenSaleContributor": "truffle run verify TokenSaleContributor@0xC1888830dA6a20B44639A97b7dF915858231fab0 --network=mumbai"
+      }
+    },
+    {
+      "contributorNetwork": "fantom_testnet",
+      "contributorChain": 10,
+      "contributorAddress": "0xa79BF704262afD63be95FDa03968dbB1e0605d5e",
+      "contributorContracts": {
+        "ICCOStructs": "0x929149D0eA7ffC6f9B5f138dAa8d9b6ACE04773B",
+        "ContributorImplementation": "0xaB49908D136FcB94F96D6d3C3AdbFCdC4C78003e",
+        "ContributorSetup": "0x1fb971338E23fD3ed0A0960EfCF8e0d33082596A",
+        "TokenSaleContributor": "0xa79BF704262afD63be95FDa03968dbB1e0605d5e"
+      },
+      "verificationString": {
+        "ICCOStructs": "truffle run verify ICCOStructs@0x929149D0eA7ffC6f9B5f138dAa8d9b6ACE04773B --network=fantom_testnet",
+        "ContributorImplementation": "truffle run verify ContributorImplementation@0xaB49908D136FcB94F96D6d3C3AdbFCdC4C78003e --network=fantom_testnet",
+        "ContributorSetup": "truffle run verify ContributorSetup@0x1fb971338E23fD3ed0A0960EfCF8e0d33082596A --network=fantom_testnet",
+        "TokenSaleContributor": "truffle run verify TokenSaleContributor@0xa79BF704262afD63be95FDa03968dbB1e0605d5e --network=fantom_testnet"
+      }
+    }
+  ]
+}

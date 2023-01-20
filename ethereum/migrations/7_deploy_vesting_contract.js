@@ -1,4 +1,5 @@
 const Vesting = artifacts.require("VestingWallet");
+const ethereumRootPath = `${__dirname}/..`;
 const DeploymentConfig = require(`${ethereumRootPath}/icco_deployment_config.js`);
 
 const fs = require("fs");
@@ -10,22 +11,28 @@ module.exports = async function(deployer, network) {
     throw Error("deployment config undefined");
   }
   
-  const nowTime = new Date().getTime / 1000;
+  let nowTime = new Date().getTime() / 1000;
+  nowTime = nowTime.toFixed(0);
 
   const vestingDetails = {
     _cliffStartTimeInSeconds: (nowTime).toString(),
     _cliffPercentage: "50",
     _linearStartTimeInSeconds: (nowTime + 60).toString(),
     _linearEndTimeInSeconds: (nowTime + 3000).toString(),
-    _linearReleasePeriodInSeconds: "60",
+    _linearReleasePeriodInSeconds: "600",
   }
 
-  const file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
-  const selectedContributor = file.contributors.filter((element) => {
-    return (element.network == network);
+  let file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
+  file = JSON.parse(file);
+  const selectedContributor = file.contributor.filter((element) => {
+    return (element.contributorNetwork == network);
   })
 
-  await deployer.deploy(Vesting, vestingDetails, selectedContributor.contributorAddress);
+  console.log("selectedContributor", selectedContributor[0])
+
+  console.log("vestingDetails", vestingDetails)
+
+  await deployer.deploy(Vesting, vestingDetails, selectedContributor[0].contributorAddress, {gas: 7000000});
 
   const fp = path.join(__dirname, "vestingAddresses.json");
   const contents = fs.existsSync(fp)

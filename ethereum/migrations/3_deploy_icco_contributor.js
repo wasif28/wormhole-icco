@@ -100,10 +100,10 @@ module.exports = async function(deployer, network) {
         TokenSaleContributor: TokenSaleContributor.address,
       },
       verificationString: {
-        ICCOStructs: `npm run verify --module=ICCOStructs --contract_address='${ICCOStructs.address}' --network=${network}`,
-        ContributorImplementation: `npm run verify --module=ContributorImplementation --contract_address='${ContributorImplementation.address}' --network=${network}`,
-        ContributorSetup: `npm run verify --module=ContributorSetup --contract_address='${ContributorSetup.address}' --network=${network}`,
-        TokenSaleContributor: `npm run verify --module=TokenSaleContributor --contract_address='${TokenSaleContributor.address}' --network=${network}`,
+        ICCOStructs: `truffle run verify ICCOStructs@${ICCOStructs.address} --network=${network}`,
+        ContributorImplementation: `truffle run verify ContributorImplementation@${ContributorImplementation.address} --network=${network}`,
+        ContributorSetup: `truffle run verify ContributorSetup@${ContributorSetup.address} --network=${network}`,
+        TokenSaleContributor: `truffle run verify TokenSaleContributor@${TokenSaleContributor.address} --network=${network}`,
       },
     };
     contents.contributor.push(contributor);

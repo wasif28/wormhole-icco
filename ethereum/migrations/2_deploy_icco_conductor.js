@@ -78,11 +78,11 @@ module.exports = async function(deployer, network) {
         TokenSaleConductor: TokenSaleConductor.address,
       },
       verificationString: {
-        ICCOErrorCodes: `npm run verify --module=ICCOErrorCodes --contract_address='${ErrorCodes.address}' --network=${network}`,
-        ICCOStructs: `npm run verify --module=ICCOStructs --contract_address='${ICCOStructs.address}' --network=${network}`,
-        ConductorImplementation: `npm run verify --module=ConductorImplementation --contract_address='${ConductorImplementation.address}' --network=${network}`,
-        ConductorSetup: `npm run verify --module=ConductorSetup --contract_address='${ConductorSetup.address}' --network=${network}`,
-        TokenSaleConductor: `npm run verify --module=TokenSaleConductor --contract_address='${TokenSaleConductor.address}' --network=${network}`,
+        ICCOErrorCodes: `truffle run verify ICCOErrorCodes@${ErrorCodes.address} --network=${network}`,
+        ICCOStructs: `truffle run verify ICCOStructs@${ICCOStructs.address} --network=${network}`,
+        ConductorImplementation: `truffle run verify ConductorImplementation@${ConductorImplementation.address} --network=${network}`,
+        ConductorSetup: `truffle run verify ConductorSetup@${ConductorSetup.address} --network=${network}`,
+        TokenSaleConductor: `truffle run verify TokenSaleConductor@${TokenSaleConductor.address} --network=${network}`,
       },
     };
     contents.conductor = conductor;

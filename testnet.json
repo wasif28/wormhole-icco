@@ -1,12 +1,12 @@
 {
   "gaurdianRpc": "https://wormhole-v2-testnet-api.certus.one",
-  "conductorAddress": "",
+  "conductorAddress": "0x60582063884126c614519e4a0c30553d2C15A397",
   "conductorChain": 6,
   "goerli": "",
-  "fuji": "",
-  "binance_testnet": "",
-  "mumbai": "",
-  "fantom_testnet": "",
+  "fuji": "0xD257c9B9367e141553D4Af0006d52a845be81980",
+  "binance_testnet": "0x5413b6673eDc6F8f26792aa96fe0de3Ee52fE107",
+  "mumbai": "0xC1888830dA6a20B44639A97b7dF915858231fab0",
+  "fantom_testnet": "0xa79BF704262afD63be95FDa03968dbB1e0605d5e",
   "solana_devnet": "",
-  "errorCodesAddress": ""
+  "errorCodesAddress": "0x3F6caD81717AbB5fa3Da17c33ae548cc17C785D6"
 }
