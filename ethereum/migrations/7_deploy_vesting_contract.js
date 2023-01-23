@@ -12,14 +12,14 @@ module.exports = async function(deployer, network) {
   }
   
   let nowTime = new Date().getTime() / 1000;
-  nowTime = nowTime.toFixed(0);
+  nowTime = parseInt(Math.floor(nowTime));
 
   const vestingDetails = {
-    _cliffStartTimeInSeconds: (nowTime).toString(),
+    _cliffStartTimeInSeconds: nowTime.toString(),
     _cliffPercentage: "50",
     _linearStartTimeInSeconds: (nowTime + 60).toString(),
-    _linearEndTimeInSeconds: (nowTime + 3000).toString(),
-    _linearReleasePeriodInSeconds: "600",
+    _linearEndTimeInSeconds: (nowTime + 3600).toString(),
+    _linearReleasePeriodInSeconds: "120",
   }
 
   let file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
@@ -28,11 +28,11 @@ module.exports = async function(deployer, network) {
     return (element.contributorNetwork == network);
   })
 
-  console.log("selectedContributor", selectedContributor[0])
+  console.log("selectedContributor", selectedContributor[0].address);
 
-  console.log("vestingDetails", vestingDetails)
+  console.log("vestingDetails", vestingDetails);
 
-  await deployer.deploy(Vesting, vestingDetails, selectedContributor[0].contributorAddress, {gas: 7000000});
+  await deployer.deploy(Vesting, vestingDetails, selectedContributor[0].contributorAddress);
 
   const fp = path.join(__dirname, "vestingAddresses.json");
   const contents = fs.existsSync(fp)
