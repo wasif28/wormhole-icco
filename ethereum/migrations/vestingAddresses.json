@@ -1,0 +1,30 @@
+{
+  "Vesting": [
+    {
+      "network": "fuji",
+      "chain": 6,
+      "contractAddress": "0x5f3849C8CF0899Aa0d897f00fD47145b50C84c10",
+      "vestingParameters": {
+        "_cliffStartTimeInSeconds": "1674565734",
+        "_cliffPercentage": "50",
+        "_linearStartTimeInSeconds": "1674565794",
+        "_linearEndTimeInSeconds": "1674569334",
+        "_linearReleasePeriodInSeconds": "120"
+      },
+      "creationEPOCH": 1674565734
+    },
+    {
+      "network": "binance_testnet",
+      "chain": 4,
+      "contractAddress": "0x7bCFF44F5DA538b7425A230c0962f54C9d4d63a2",
+      "vestingParameters": {
+        "_cliffStartTimeInSeconds": "1674565766",
+        "_cliffPercentage": "50",
+        "_linearStartTimeInSeconds": "1674565826",
+        "_linearEndTimeInSeconds": "1674569366",
+        "_linearReleasePeriodInSeconds": "120"
+      },
+      "creationEPOCH": 1674565766
+    }
+  ]
+}

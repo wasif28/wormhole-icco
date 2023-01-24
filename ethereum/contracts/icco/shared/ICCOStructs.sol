@@ -267,7 +267,7 @@ library ICCOStructs {
         saleInit.isVested = encoded.toUint8(index);
         index += 1;
 
-        uint256 len2 = 1 + 35 * uint256(uint8(encoded[index]));
+        uint256 len2 = 1 + 34 * uint256(uint8(encoded[index]));
         saleInit.vestings = parseVestings(encoded.slice(index, len2));
         index += len2;
 
@@ -333,15 +333,15 @@ library ICCOStructs {
     }
 
     function parseVestings(bytes memory encoded) public pure returns(Vesting[] memory vestings) {
-        require(encoded.length % 35 == 1, "invalid Vesting[]");
+        require(encoded.length % 34 == 1, "invalid Vesting[]");
 
         uint8 len = uint8(encoded[0]);
 
         vestings = new Vesting[](len);
 
         for (uint256 i = 0; i < len;) {
-            vestings[i].vestingContractAddress   = encoded.toBytes32( 1 + i * 35);
-            vestings[i].vestingContractChain  = encoded.toUint16( 33 + i * 35);
+            vestings[i].vestingContractAddress   = encoded.toBytes32( 1 + i * 34);
+            vestings[i].vestingContractChain  = encoded.toUint16( 33 + i * 34);
             unchecked { i += 1; }
         }
     }

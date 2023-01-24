@@ -22,6 +22,8 @@
     "deploy-contributor": "truffle migrate --skip-dry-run --f 3 --to 3 --network",
     "register-contributors": "truffle migrate --skip-dry-run --f 6 --to 6 --network",
     "deploy-vesting": "truffle migrate --skip-dry-run --f 7 --to 7 --network",
+    "createSaleVesting": "truffle migrate --skip-dry-run --f 8 --to 8 --network",
+    "getVAAcreateSaleVesting": "truffle migrate --skip-dry-run --f 9 --to --9 --network",
     "test": "mkdir -p build/contracts && cp node_modules/@openzeppelin/contracts/build/contracts/* build/contracts/ && truffle test",
     "flatten": "mkdir -p node_modules/@poanet/solidity-flattener/contracts && cp -r contracts/* node_modules/@poanet/solidity-flattener/contracts/ && poa-solidity-flattener",
     "verify": "patch -u -f node_modules/truffle-plugin-verify/constants.js -i truffle-verify-constants.patch; truffle run verify $npm_config_module@$npm_config_contract_address --network $npm_config_network"
@@ -30,9 +32,12 @@
   "license": "ISC",
   "dependencies": {
     "@certusone/wormhole-sdk": "^0.9.9",
+    "@ethersproject/bytes": "^5.7.0",
+    "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
     "@project-serum/anchor": "^0.26.0",
     "dotenv": "^10.0.0",
     "elliptic": "^6.5.4",
+    "ethers": "^5.7.2",
     "ganache-cli": "^6.12.1",
     "jsonfile": "^4.0.0",
     "solc": "^0.8.4",
