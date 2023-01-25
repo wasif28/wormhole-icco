@@ -46,6 +46,7 @@ module.exports = {
       gas: 10000000,
       gasPrice: 191000000000,
       confirmations: 1,
+      networkCheckTimeout: 1000,
       timeoutBlocks: 200,
       skipDryRun: false,
     },
@@ -59,6 +60,9 @@ module.exports = {
       network_id: "5",
       gas: 6465030,
       gasPrice: 10000000000,
+      confirmations: 1,
+      networkCheckTimeout: 1000,
+      timeoutBlocks: 200,
     },
     binance: {
       provider: () => {
@@ -70,6 +74,9 @@ module.exports = {
       network_id: "56",
       gas: 70000000,
       gasPrice: 8000000000,
+      confirmations: 1,
+      networkCheckTimeout: 1000,
+      timeoutBlocks: 200,
     },
     binance_testnet: {
       provider: () =>
@@ -80,6 +87,9 @@ module.exports = {
       network_id: "97",
       gas: 29000000,
       gasPrice: 10000000000,
+      confirmations: 1,
+      networkCheckTimeout: 10000,
+      timeoutBlocks: 2000,
     },
     polygon: {
       provider: () => {
@@ -91,6 +101,9 @@ module.exports = {
       network_id: "137",
       gas: 10000000,
       gasPrice: 700000000000,
+      confirmations: 1,
+      networkCheckTimeout: 1000,
+      timeoutBlocks: 200,
     },
     mumbai: {
       provider: () => {
@@ -100,6 +113,9 @@ module.exports = {
         );
       },
       network_id: "80001",
+      confirmations: 1,
+      networkCheckTimeout: 1000,
+      timeoutBlocks: 200,
     },
     avalanche: {
       provider: () => {
@@ -111,6 +127,9 @@ module.exports = {
       network_id: "43114",
       gas: 8000000,
       gasPrice: 26000000000,
+      confirmations: 1,
+      networkCheckTimeout: 1000,
+      timeoutBlocks: 200,
     },
     fuji: {
       provider: () =>
@@ -119,6 +138,9 @@ module.exports = {
           DeploymentConfig["fuji"].rpc
         ),
       network_id: "43113",
+      confirmations: 1,
+      networkCheckTimeout: 1000,
+      timeoutBlocks: 200,
     },
     fantom_testnet: {
       provider: () => {
@@ -128,8 +150,11 @@ module.exports = {
         );
       },
       network_id: 0xfa2,
-      gas: 4465030,
-      gasPrice: 300000000000,
+      gas: 8000000,
+      gasPrice: 30000000000,
+      confirmations: 1,
+      networkCheckTimeout: 1000,
+      timeoutBlocks: 200,
     },
   },
 
