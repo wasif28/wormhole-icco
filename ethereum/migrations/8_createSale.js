@@ -15,11 +15,31 @@ module.exports = async function(deployer, network, accounts) {
   const bscUSDT = "0xA9c64Bdbeb7918C4c3F1cc8B83E044D8F5e3203f";
   const tokenAmount = "100000000000000000000"; // 100 tokens 18 decimals
 
-  const vestingFuji = "0x6796F24Ae96a622b4956c6F086A62d021D529522";
-  const vestingBsc = "0xD0e4b6358f4dCBb65c32e780c8F5614C53AC1D6d";
-
   let file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
   file = JSON.parse(file);
+
+  let vestingFile = fs.readFileSync(path.join(__dirname, "vestingAddresses.json"));
+  vestingFile = JSON.parse(vestingFile);
+
+  let vestingFuji;
+  let vestingBsc;
+  let vestingMumbai;
+  let vestingFantom;
+
+  for (const elem of vestingFile.Vesting) {
+    if(elem.chain == 6){
+      vestingFuji = elem.contractAddress;
+    }
+    else if(elem.chain == 4){
+      vestingBsc = elem.contractAddress;
+    }
+    else if(elem.chain == 5){
+      vestingMumbai = elem.contractAddress;
+    }
+    else if(elem.chain == 10){
+      vestingFantom = elem.contractAddress;
+    }
+  }
 
   let conductorAddress = file.conductor.conductorAddress;
   const conductor = await ConductorImplementation.at(conductorAddress);

@@ -35,7 +35,7 @@ module.exports = async function(deployer, network) {
   await deployer.deploy(Vesting, vestingDetails, selectedContributor[0].contributorAddress);
 
   const fp = path.join(__dirname, "vestingAddresses.json");
-  const contents = fs.existsSync(fp)
+  let contents = fs.existsSync(fp)
         ? JSON.parse(fs.readFileSync(fp, "utf8"))
         : { Vesting: [] };
 
@@ -47,7 +47,14 @@ module.exports = async function(deployer, network) {
     creationEPOCH: nowTime,
     verificationScript: `truffle run verify VestingWallet@${Vesting.address} --network=${network}`,
   }
-  contents.Vesting.push(VestingDetails);
+
+  let index = contents.Vesting.findIndex(item => item.network == network);
+  if(index == -1) {
+    contents.Vesting.push(VestingDetails);
+  }
+  else{
+    contents.Vesting[index] = VestingDetails;
+  }
 
   fs.writeFileSync(fp, JSON.stringify(contents, null, 2), "utf8");
 

@@ -15,7 +15,7 @@ const Web3 = require("web3");
 
 async function getVaa() {
   const createSaleTx =
-  "0x9487b4e14865187d4b2c4c4fd7b39c530b71a1d5abff0f85093d3d426f59d8f2";
+  "0x64b4ca5593f66e85130ed6e32c20d0547b9168dccc0ef9adb244991f05818da7";
 
   let file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
   file = JSON.parse(file);

@@ -3,30 +3,30 @@
     {
       "network": "fuji",
       "chain": 6,
-      "contractAddress": "0x6796F24Ae96a622b4956c6F086A62d021D529522",
+      "contractAddress": "0x1E059d7bBfcE5a0Bd7716c69935ed3BA1cBe20c7",
       "vestingParameters": {
-        "_cliffStartTimeInSeconds": "1674636335",
+        "_cliffStartTimeInSeconds": "1674655841",
         "_cliffPercentage": "50",
-        "_linearStartTimeInSeconds": "1674636395",
-        "_linearEndTimeInSeconds": "1674639935",
+        "_linearStartTimeInSeconds": "1674655901",
+        "_linearEndTimeInSeconds": "1674659441",
         "_linearReleasePeriodInSeconds": "120"
       },
-      "creationEPOCH": 1674636335,
-      "verificationScript": "truffle run verify VestingWallet@0x6796F24Ae96a622b4956c6F086A62d021D529522 --network=fuji"
+      "creationEPOCH": 1674655841,
+      "verificationScript": "truffle run verify VestingWallet@0x1E059d7bBfcE5a0Bd7716c69935ed3BA1cBe20c7 --network=fuji"
     },
     {
       "network": "binance_testnet",
       "chain": 4,
-      "contractAddress": "0xD0e4b6358f4dCBb65c32e780c8F5614C53AC1D6d",
+      "contractAddress": "0x7d23a2b143A7C57e2a0DAC4e2d6533BB52369bD8",
       "vestingParameters": {
-        "_cliffStartTimeInSeconds": "1674636384",
+        "_cliffStartTimeInSeconds": "1674655877",
         "_cliffPercentage": "50",
-        "_linearStartTimeInSeconds": "1674636444",
-        "_linearEndTimeInSeconds": "1674639984",
+        "_linearStartTimeInSeconds": "1674655937",
+        "_linearEndTimeInSeconds": "1674659477",
         "_linearReleasePeriodInSeconds": "120"
       },
-      "creationEPOCH": 1674636384,
-      "verificationScript": "truffle run verify VestingWallet@0xD0e4b6358f4dCBb65c32e780c8F5614C53AC1D6d --network=binance_testnet"
+      "creationEPOCH": 1674655877,
+      "verificationScript": "truffle run verify VestingWallet@0x7d23a2b143A7C57e2a0DAC4e2d6533BB52369bD8 --network=binance_testnet"
     }
   ]
 }

@@ -90,7 +90,7 @@ contract VestingWallet is Context, ReentrancyGuard {
 
     function setSaleId(uint256 saleId) public returns(bool) {
         require(_msgSender() == address(_contributor), "Only Contributor Can set SaleId");
-        require(saleId == 0, "Cannot Set SaleId if once set");
+        require(_saleId == 0, "Cannot Set SaleId if once set");
         _saleId = saleId;
         return true;
     }
