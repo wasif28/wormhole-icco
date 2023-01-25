@@ -15,8 +15,8 @@ module.exports = async function(deployer, network, accounts) {
   const bscUSDT = "0xA9c64Bdbeb7918C4c3F1cc8B83E044D8F5e3203f";
   const tokenAmount = "100000000000000000000"; // 100 tokens 18 decimals
 
-  const vestingFuji = "0x5f3849C8CF0899Aa0d897f00fD47145b50C84c10";
-  const vestingBsc = "0x7bCFF44F5DA538b7425A230c0962f54C9d4d63a2";
+  const vestingFuji = "0x6796F24Ae96a622b4956c6F086A62d021D529522";
+  const vestingBsc = "0xD0e4b6358f4dCBb65c32e780c8F5614C53AC1D6d";
 
   let file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
   file = JSON.parse(file);

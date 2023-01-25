@@ -44,7 +44,8 @@ module.exports = async function(deployer, network) {
     chain: parseInt(config.contributorChainId),
     contractAddress: Vesting.address,
     vestingParameters: vestingDetails,
-    creationEPOCH: nowTime
+    creationEPOCH: nowTime,
+    verificationScript: `truffle run verify VestingWallet@${Vesting.address} --network=${network}`,
   }
   contents.Vesting.push(VestingDetails);
 
