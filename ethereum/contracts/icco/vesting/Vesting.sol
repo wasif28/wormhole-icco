@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.8.0) (finance/VestingWallet.sol)
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -25,67 +25,38 @@ import "../../interfaces/IContributor.sol";
 contract VestingWallet is Context, ReentrancyGuard {
 
     event EventClaimAllocation (
+        address indexed user,
         uint256 saleId,
         uint256 tokenIndex,
-        uint256 amount,
-        uint256 vestingIteration
+        uint256 amount
     );
-
-    mapping( address => mapping(uint256 => mapping(uint256 => bool)) ) public alreadyClaimed;     // tracks the vesting of each userAddress => tokenIndex => vestingIteration => claimedStatus
-
-    uint256 public numberOfVestings;        // Number of vestings in the IDO
-    uint256[] public vestingPercentages;    // Vesting Percentages in the IDO
-    uint256[] public vestingUnlockTimes;     // Vesting StartTimes in the IDO
-
+    
     struct Vesting {
         uint256 _cliffStartTimeInSeconds;
         uint256 _cliffPercentage;
         uint256 _linearStartTimeInSeconds;
         uint256 _linearEndTimeInSeconds;
-        uint256 _linearReleasePeriodInSeconds;
     }
+
+    mapping( address => mapping(uint256 => bool) ) public claimedCliff;     // tracks the vesting cliff of each userAddress => tokenIndex => claimedStatus
+    mapping( address => mapping(uint256 => uint256) ) public claimedAmount;     // tracks the vesting amount of each userAddress => tokenIndex => claimedAmount
 
     Vesting public _vestingInformation;
     IContributor public _contributor;
     uint256 public _saleId;
 
+    /**
+     * @dev Set the beneficiary, start timestamp and vesting duration of the vesting wallet.
+     */
     constructor(Vesting memory vestingDetails, address contributor) {
-        
         _vestingInformation = vestingDetails;
         _contributor = IContributor(contributor);
-
-        uint256 index = 0;
-
-        if(vestingDetails._cliffStartTimeInSeconds > 0){
-            vestingUnlockTimes.push(vestingDetails._cliffStartTimeInSeconds);
-            vestingPercentages.push(vestingDetails._cliffPercentage);
-
-            numberOfVestings++;
-            index++;
-        }
-
-        numberOfVestings += (vestingDetails._linearEndTimeInSeconds - vestingDetails._linearStartTimeInSeconds) / (vestingDetails._linearReleasePeriodInSeconds) ;
-
-        for ( uint256 i = index; i < numberOfVestings; i++) {
-            uint256 vestingTime = vestingDetails._linearStartTimeInSeconds + (vestingDetails._linearReleasePeriodInSeconds * i);
-            vestingUnlockTimes.push(vestingTime);
-            uint256 vestingPercentage;
-            if(vestingDetails._cliffStartTimeInSeconds > 0){
-                vestingPercentage = (100 - vestingDetails._cliffPercentage) / (numberOfVestings - 1);
-            }
-            else{
-                vestingPercentage = (100) / (numberOfVestings);
-            }
-            vestingPercentages.push(vestingPercentage);
-        }
-
     }
 
     /**
      * @dev The contract should be able to receive Eth.
      */
     receive() external payable virtual {}
-
     fallback() external payable virtual {}
 
     function setSaleId(uint256 saleId) public returns(bool) {
@@ -95,7 +66,81 @@ contract VestingWallet is Context, ReentrancyGuard {
         return true;
     }
 
-    function claimAllocation(uint256 saleId, uint256 tokenIndex) public nonReentrant {
+    /**
+     * @dev Amount of token already released
+     */
+    function released(address user, uint256 tokenIndex) public view virtual returns (uint256) {
+        return claimedAmount[user][tokenIndex];
+    }
+
+    function vestedLinearDuration() public view returns (uint256) {
+        return (_vestingInformation._linearEndTimeInSeconds - _vestingInformation._linearStartTimeInSeconds);
+    }
+
+    function vestedLinearTimePassed() public view returns (uint256) {
+        return (block.timestamp - _vestingInformation._linearStartTimeInSeconds);
+    }
+
+    function vestedTotalCliffAmount(uint256 totalAllocation) public view returns (uint256){
+        if(_vestingInformation._cliffPercentage > 0){
+            uint256 amount = totalAllocation * _vestingInformation._cliffPercentage;
+            amount = amount / 100;
+            return amount;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    function vestedTotalLinearAmount(uint256 totalAllocation) public view returns (uint256){
+        
+        uint256 linearAllocation;
+        if(_vestingInformation._cliffPercentage > 0){
+            linearAllocation = totalAllocation - vestedTotalCliffAmount(totalAllocation);
+        }
+        else{
+            linearAllocation = totalAllocation;
+        }
+
+        return linearAllocation;
+    }
+    
+    function vestedLinearUnlocked(uint256 totalAllocation) public view returns (uint256) {
+        uint256 linearAllocation = vestedTotalLinearAmount(totalAllocation);
+        if(block.timestamp < _vestingInformation._linearStartTimeInSeconds){
+            return 0;
+        }
+        else if(block.timestamp > _vestingInformation._linearEndTimeInSeconds){
+            return linearAllocation;
+        }
+        else {
+            uint256 unlocked = (linearAllocation * vestedLinearTimePassed()) / vestedLinearDuration(); 
+            return unlocked;
+        }
+    }
+
+    function vestedLinearClaimable(uint256 totalAllocation, uint256 alreadyClaimedAmount) public view returns(uint256) {
+        uint256 linearClaimable; 
+        if(_vestingInformation._cliffStartTimeInSeconds > 0){
+            linearClaimable = vestedTotalCliffAmount(totalAllocation) + vestedLinearUnlocked(totalAllocation);
+        }
+        else{
+            linearClaimable = vestedLinearUnlocked(totalAllocation);
+        }
+
+        if( (linearClaimable - alreadyClaimedAmount) > 0 ){
+            linearClaimable = linearClaimable - alreadyClaimedAmount;
+        }
+        else{
+            linearClaimable = 0;
+        }
+
+        return linearClaimable;
+    }
+
+
+    function release(uint256 saleId, uint256 tokenIndex) public nonReentrant {
+
         require(_saleId != 0, "Sale Id needs to be set on vesting contract by the contributor");
         require(_contributor.saleExists(saleId), "sale not initiated");
 
@@ -135,30 +180,27 @@ contract VestingWallet is Context, ReentrancyGuard {
             tokenAddress = _contributor.tokenBridge().wrappedAsset(sale.tokenChain, sale.tokenAddress);
         }
 
-        // Here unlocking tokens according to vesting requirements provided at the start
-        require(
-            alreadyClaimed[msg.sender][tokenIndex][numberOfVestings-1] == false, 
-                "All Vestings Claimed Already"
-            );
-        
-        bool claimedIterations;
-        for (uint256 i = 0; i < numberOfVestings; i++) {
-                if (block.timestamp >= vestingUnlockTimes[i]){
-                    if(alreadyClaimed[msg.sender][tokenIndex][i] != true){
-                        //success case
-                        uint256 toSend = thisAllocation
-                             * vestingPercentages[i] /
-                            100; 
-
-                        claimedIterations = true;
-                        alreadyClaimed[msg.sender][tokenIndex][i] = true;
-                        SafeERC20.safeTransfer(IERC20(tokenAddress), msg.sender, toSend); 
-                        /// emit EventClaimAllocation event.
-                        emit EventClaimAllocation(saleId, tokenIndex, toSend, i);    
-                    }
+        // handle cliff release
+        if(_vestingInformation._cliffStartTimeInSeconds > 0){
+            if(claimedCliff[msg.sender][tokenIndex] == false){
+                if( block.timestamp >= _vestingInformation._cliffStartTimeInSeconds){
+                    uint256 toSend = vestedTotalCliffAmount(thisAllocation);
+                    claimedCliff[msg.sender][tokenIndex] = true;
+                    claimedAmount[msg.sender][tokenIndex] += toSend;
+                    SafeERC20.safeTransfer(IERC20(tokenAddress), msg.sender, toSend);
+                    emit EventClaimAllocation(msg.sender, saleId, tokenIndex, toSend);
                 }
             }
-        require(claimedIterations, "Your claimable vestings are not unlocked yet");
-    }
+        }
 
+        // handle linear release
+        if(block.timestamp >= _vestingInformation._linearStartTimeInSeconds){
+            uint256 toSend = vestedLinearClaimable(thisAllocation, claimedAmount[msg.sender][tokenIndex]);
+            require(toSend > 0, "No Claims Available at the moment");
+            claimedAmount[msg.sender][tokenIndex] += toSend;
+            SafeERC20.safeTransfer(IERC20(tokenAddress), msg.sender, toSend);
+            emit EventClaimAllocation(msg.sender, saleId, tokenIndex, toSend);
+        }
+
+    }
 }
