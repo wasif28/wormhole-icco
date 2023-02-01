@@ -18,8 +18,7 @@ module.exports = async function(deployer, network) {
     _cliffStartTimeInSeconds: nowTime.toString(),
     _cliffPercentage: "50",
     _linearStartTimeInSeconds: (nowTime + 60).toString(),
-    _linearEndTimeInSeconds: (nowTime + 3600).toString(),
-    _linearReleasePeriodInSeconds: "120",
+    _linearEndTimeInSeconds: (nowTime + 3600).toString()
   }
 
   let file = fs.readFileSync(path.join(__dirname, "deployedAddresses.json"));
